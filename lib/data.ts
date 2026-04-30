@@ -1,0 +1,297 @@
+export type Color = { name: string; hex: string }
+
+export type Product = {
+  id: string
+  name: string
+  subtitle: string
+  category: string
+  price: number
+  originalPrice: number | null
+  badge: 'Sale' | 'New' | null
+  rating: number
+  reviews: number
+  colors: Color[]
+  sizes: string[]
+  unavailableSizes: string[]
+  material: string
+  fit: string
+  description: string
+  specs: Record<string, string>
+  bg: string
+  featured: boolean
+}
+
+export type Category = { id: string; label: string; desc: string }
+
+export type Testimonial = { name: string; location: string; text: string; rating: number }
+
+export type CartItem = {
+  id: string
+  name: string
+  price: number
+  qty: number
+  bg: string
+  selectedColor?: string
+  selectedSize?: string
+}
+
+export const categories: Category[] = [
+  { id: 'outerwear', label: 'Outerwear', desc: 'Built for the elements' },
+  { id: 'tops',      label: 'Tops',      desc: 'Layer up or go solo' },
+  { id: 'bottoms',   label: 'Bottoms',   desc: 'Grounded in quality' },
+  { id: 'knitwear',  label: 'Knitwear',  desc: 'Warmth, refined' },
+]
+
+export const products: Product[] = [
+  {
+    id: 'ember-field-jacket',
+    name: 'Ember Field Jacket',
+    subtitle: 'The definitive layer for all seasons',
+    category: 'outerwear',
+    price: 298,
+    originalPrice: 420,
+    badge: 'Sale',
+    rating: 4.8,
+    reviews: 214,
+    colors: [
+      { name: 'Crimson Red',    hex: '#b91c1c' },
+      { name: 'Midnight Black', hex: '#1a1a1a' },
+      { name: 'Slate Grey',     hex: '#64748b' },
+      { name: 'Forest Green',   hex: '#166534' },
+    ],
+    sizes: ['XS','S','M','L','XL','XXL'],
+    unavailableSizes: ['XS'],
+    material: 'Waxed Cotton, 300g',
+    fit: 'Regular / Relaxed',
+    description: 'The Ember Field Jacket is built for the in-between — that shoulder season when you need more than a shirt and less than a parka. Cut from a 300g waxed cotton shell with a quilted thermal liner, it moves with you from city commute to mountain trail without missing a beat.',
+    specs: { Material:'Waxed Cotton 300g', Lining:'Quilted Thermal', Fit:'Regular / Relaxed', Length:'Hip Length', Pockets:'6 (2 chest, 4 hand)', Care:'Re-wax as needed' },
+    bg: 'oklch(0.92 0.04 27)',
+    featured: true,
+  },
+  {
+    id: 'thornton-parka',
+    name: 'Thornton Parka',
+    subtitle: 'Command winter with confidence',
+    category: 'outerwear',
+    price: 380,
+    originalPrice: null,
+    badge: 'New',
+    rating: 4.9,
+    reviews: 88,
+    colors: [{ name: 'Midnight Black', hex: '#1a1a1a' }, { name: 'Olive', hex: '#4a5240' }],
+    sizes: ['S','M','L','XL','XXL'],
+    unavailableSizes: [],
+    material: 'Shell: 100% Nylon, Fill: 650-fill Down',
+    fit: 'Relaxed',
+    description: 'When the temperature drops, the Thornton Parka steps up. 650-fill down insulation, a storm-proof shell and a detachable hood make this the parka you reach for when conditions are serious.',
+    specs: { Shell:'100% Nylon', Fill:'650-fill Down', Fit:'Relaxed', Length:'Mid-thigh', Pockets:'5', Care:'Machine wash cold' },
+    bg: 'oklch(0.88 0.01 220)',
+    featured: true,
+  },
+  {
+    id: 'cascades-vest',
+    name: 'Cascades Vest',
+    subtitle: 'Insulation without restriction',
+    category: 'outerwear',
+    price: 165,
+    originalPrice: 210,
+    badge: 'Sale',
+    rating: 4.6,
+    reviews: 132,
+    colors: [{ name: 'Crimson Red', hex: '#b91c1c' }, { name: 'Navy', hex: '#1e3a5f' }, { name: 'Slate Grey', hex: '#64748b' }],
+    sizes: ['XS','S','M','L','XL'],
+    unavailableSizes: [],
+    material: 'Recycled Polyester Shell',
+    fit: 'Regular',
+    description: 'The Cascades Vest provides targeted core warmth without restricting arm movement. Ideal for active pursuits or as a mid-layer under a shell.',
+    specs: { Shell:'Recycled Polyester', Fill:'Synthetic', Fit:'Regular', Pockets:'4', Care:'Machine wash cold' },
+    bg: 'oklch(0.93 0.03 27)',
+    featured: false,
+  },
+  {
+    id: 'mesa-overshirt',
+    name: 'Mesa Overshirt',
+    subtitle: 'The shirt that does everything',
+    category: 'tops',
+    price: 148,
+    originalPrice: null,
+    badge: null,
+    rating: 4.7,
+    reviews: 176,
+    colors: [{ name: 'Rust', hex: '#a0522d' }, { name: 'Chambray', hex: '#4a7fa5' }, { name: 'Olive', hex: '#4a5240' }],
+    sizes: ['XS','S','M','L','XL','XXL'],
+    unavailableSizes: ['XS'],
+    material: '100% Brushed Flannel',
+    fit: 'Oversized',
+    description: 'Heavy-weight brushed flannel in a generous oversized cut. The Mesa Overshirt works alone or layered — equally at home at the trailhead or the table.',
+    specs: { Material:'Brushed Flannel', Weight:'280g', Fit:'Oversized', Pockets:'2 chest', Care:'Machine wash warm' },
+    bg: 'oklch(0.93 0.03 50)',
+    featured: true,
+  },
+  {
+    id: 'summit-fleece',
+    name: 'Summit Fleece',
+    subtitle: 'Soft, fast, built to move',
+    category: 'tops',
+    price: 195,
+    originalPrice: null,
+    badge: 'New',
+    rating: 4.8,
+    reviews: 61,
+    colors: [{ name: 'Crimson Red', hex: '#b91c1c' }, { name: 'Midnight Black', hex: '#1a1a1a' }, { name: 'Cloud', hex: '#e8e5e0' }],
+    sizes: ['S','M','L','XL','XXL'],
+    unavailableSizes: [],
+    material: 'Polartec® Grid Fleece',
+    fit: 'Athletic',
+    description: 'Polartec® Grid Fleece construction traps warmth while wicking moisture. The Summit Fleece is the mid-layer that disappears under a shell and shines on its own.',
+    specs: { Material:'Polartec® Grid Fleece', Fit:'Athletic', Pockets:'2 zip', Care:'Machine wash cold' },
+    bg: 'oklch(0.94 0.02 27)',
+    featured: false,
+  },
+  {
+    id: 'valley-tee',
+    name: 'Valley Tee',
+    subtitle: 'The perfect blank canvas',
+    category: 'tops',
+    price: 58,
+    originalPrice: null,
+    badge: null,
+    rating: 4.5,
+    reviews: 341,
+    colors: [{ name: 'White', hex: '#f5f2ee' }, { name: 'Midnight Black', hex: '#1a1a1a' }, { name: 'Crimson Red', hex: '#b91c1c' }, { name: 'Sage', hex: '#7c8f72' }],
+    sizes: ['XS','S','M','L','XL','XXL'],
+    unavailableSizes: [],
+    material: '200g Supima Cotton',
+    fit: 'Classic',
+    description: '200g Supima cotton jersey for a luxurious hand-feel that lasts. Preshrunk, reinforced seams, and a classic boxy cut make the Valley Tee the one you grab first.',
+    specs: { Material:'200g Supima Cotton', Fit:'Classic / Boxy', Neck:'Crewneck', Care:'Machine wash cold' },
+    bg: 'oklch(0.97 0.005 80)',
+    featured: false,
+  },
+  {
+    id: 'ridge-knit',
+    name: 'Ridge Knit',
+    subtitle: 'Heritage texture, modern proportions',
+    category: 'knitwear',
+    price: 188,
+    originalPrice: 240,
+    badge: 'Sale',
+    rating: 4.7,
+    reviews: 95,
+    colors: [{ name: 'Oat', hex: '#d4c5a9' }, { name: 'Crimson Red', hex: '#b91c1c' }, { name: 'Midnight Black', hex: '#1a1a1a' }],
+    sizes: ['S','M','L','XL'],
+    unavailableSizes: ['XL'],
+    material: '100% Merino Wool',
+    fit: 'Relaxed',
+    description: 'Chunky cable-knit merino in a generous dropped-shoulder silhouette. The Ridge Knit is the sweater you keep reaching for — warm, breathable, and only getting better with age.',
+    specs: { Material:'100% Merino Wool', Gauge:'5GG', Fit:'Relaxed', Care:'Hand wash or dry clean' },
+    bg: 'oklch(0.93 0.02 80)',
+    featured: true,
+  },
+  {
+    id: 'basin-hoodie',
+    name: 'Basin Hoodie',
+    subtitle: 'The one you never take off',
+    category: 'tops',
+    price: 135,
+    originalPrice: null,
+    badge: null,
+    rating: 4.9,
+    reviews: 288,
+    colors: [{ name: 'Midnight Black', hex: '#1a1a1a' }, { name: 'Slate Grey', hex: '#64748b' }, { name: 'Crimson Red', hex: '#b91c1c' }],
+    sizes: ['XS','S','M','L','XL','XXL'],
+    unavailableSizes: [],
+    material: '380g French Terry',
+    fit: 'Oversized',
+    description: '380g French Terry cotton in an oversized silhouette with a garment-dyed finish for a worn-in look from day one. Heavy enough to be a layer, comfortable enough to sleep in.',
+    specs: { Material:'380g French Terry', Finish:'Garment Dyed', Fit:'Oversized', Pockets:'Kangaroo', Care:'Machine wash cold' },
+    bg: 'oklch(0.91 0.01 220)',
+    featured: false,
+  },
+  {
+    id: 'canyon-chinos',
+    name: 'Canyon Chinos',
+    subtitle: 'From the desk to the trail',
+    category: 'bottoms',
+    price: 110,
+    originalPrice: null,
+    badge: null,
+    rating: 4.6,
+    reviews: 203,
+    colors: [{ name: 'Khaki', hex: '#c3a882' }, { name: 'Midnight Black', hex: '#1a1a1a' }, { name: 'Olive', hex: '#4a5240' }],
+    sizes: ['28','30','32','34','36','38'],
+    unavailableSizes: ['38'],
+    material: '98% Cotton, 2% Elastane',
+    fit: 'Slim Tapered',
+    description: 'A technical stretch-cotton twill that looks sharp and moves freely. The Canyon Chino goes from office to outdoor without compromise.',
+    specs: { Material:'98% Cotton 2% Elastane', Weave:'Twill', Fit:'Slim Tapered', Rise:'Mid', Care:'Machine wash cold' },
+    bg: 'oklch(0.93 0.02 80)',
+    featured: false,
+  },
+  {
+    id: 'terrace-polo',
+    name: 'Terrace Polo',
+    subtitle: 'Refined but never precious',
+    category: 'tops',
+    price: 95,
+    originalPrice: null,
+    badge: null,
+    rating: 4.4,
+    reviews: 119,
+    colors: [{ name: 'Crimson Red', hex: '#b91c1c' }, { name: 'White', hex: '#f5f2ee' }, { name: 'Navy', hex: '#1e3a5f' }],
+    sizes: ['XS','S','M','L','XL','XXL'],
+    unavailableSizes: [],
+    material: 'Piqué Cotton',
+    fit: 'Regular',
+    description: 'A three-button piqué polo in a relaxed regular fit. The Terrace Polo has the right weight for spring through fall — never too stiff, never too casual.',
+    specs: { Material:'Piqué Cotton', Fit:'Regular', Collar:'Ribbed', Care:'Machine wash cold' },
+    bg: 'oklch(0.95 0.02 27)',
+    featured: false,
+  },
+  {
+    id: 'ridgeline-shorts',
+    name: 'Ridgeline Shorts',
+    subtitle: 'Move freely, look sharp',
+    category: 'bottoms',
+    price: 72,
+    originalPrice: null,
+    badge: null,
+    rating: 4.5,
+    reviews: 157,
+    colors: [{ name: 'Slate Grey', hex: '#64748b' }, { name: 'Midnight Black', hex: '#1a1a1a' }, { name: 'Olive', hex: '#4a5240' }],
+    sizes: ['XS','S','M','L','XL'],
+    unavailableSizes: [],
+    material: '4-Way Stretch Nylon',
+    fit: 'Athletic',
+    description: '4-way stretch nylon with a built-in brief liner and zippered security pocket. The Ridgeline Shorts go from trail to town without a second thought.',
+    specs: { Material:'4-Way Stretch Nylon', Liner:'Built-in Brief', Inseam:'7"', Pockets:'3 + zip', Care:'Machine wash cold' },
+    bg: 'oklch(0.93 0.01 210)',
+    featured: false,
+  },
+  {
+    id: 'harbor-peacoat',
+    name: 'Harbor Peacoat',
+    subtitle: 'A classic, re-engineered',
+    category: 'outerwear',
+    price: 320,
+    originalPrice: null,
+    badge: 'New',
+    rating: 4.8,
+    reviews: 44,
+    colors: [{ name: 'Midnight Black', hex: '#1a1a1a' }, { name: 'Camel', hex: '#b8934a' }],
+    sizes: ['S','M','L','XL','XXL'],
+    unavailableSizes: [],
+    material: '80% Wool, 20% Cashmere',
+    fit: 'Tailored',
+    description: 'An 80/20 wool-cashmere blend double-breasted peacoat with a modern tailored cut. Brass anchor buttons, a full lining, and structured shoulders make this the coat that anchors any wardrobe.',
+    specs: { Material:'80% Wool 20% Cashmere', Lining:'Full Silk-blend', Fit:'Tailored', Buttons:'Brass', Care:'Dry clean only' },
+    bg: 'oklch(0.88 0.01 80)',
+    featured: false,
+  },
+]
+
+export const testimonials: Testimonial[] = [
+  { name: 'James O.', location: 'Portland, OR', text: 'Redleaf makes the only jackets I actually want to wear every single day. The quality is unreal for the price point.', rating: 5 },
+  { name: 'Priya N.', location: 'London, UK', text: "I've bought three pieces now and each one has been perfect. Fast shipping, beautiful packaging, and the fit guides are accurate.", rating: 5 },
+  { name: 'Carlos M.', location: 'Austin, TX', text: 'Finally a brand that gets it. No logo spam, no fast fashion nonsense. Just well-made clothes that last.', rating: 5 },
+]
