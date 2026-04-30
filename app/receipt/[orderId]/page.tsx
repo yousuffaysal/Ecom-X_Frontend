@@ -118,6 +118,23 @@ export default function ReceiptPage() {
         @media screen {
           #receipt-root { background: #f1efe9; min-height: 100vh; padding: 2rem 1rem 4rem; }
         }
+        
+        @media screen and (max-width: 640px) {
+          #receipt-root { padding: 1rem 0.5rem 2rem; }
+          .receipt-header { flex-direction: column !important; gap: 1.5rem; text-align: left !important; }
+          .receipt-meta { text-align: left !important; align-items: flex-start !important; }
+          .receipt-addresses { grid-template-columns: 1fr !important; }
+          .receipt-address-col { border-right: none !important; border-bottom: 1px solid #f0ede8; padding: 1.25rem 1.5rem !important; }
+          .receipt-address-col:last-child { border-bottom: none; }
+          .receipt-table-wrapper { padding: 0 1rem !important; }
+          .hide-mobile { display: none !important; }
+          .show-mobile { display: block !important; }
+          .receipt-header-stripe { padding: 1.5rem !important; }
+          .receipt-totals { padding: 0 1.5rem 1.5rem !important; }
+          .receipt-totals-inner { width: 100% !important; }
+          .receipt-footer { flex-direction: column !important; text-align: center !important; gap: 1.5rem; padding: 1.5rem !important; }
+          .receipt-footer > div { text-align: center !important; }
+        }
       `}</style>
 
       <div id="receipt-root">
@@ -157,15 +174,17 @@ export default function ReceiptPage() {
           boxShadow: '0 8px 40px rgba(0,0,0,0.10)',
           fontFamily: 'var(--font-dm-sans), "DM Sans", sans-serif',
           color: '#1a1a1a',
+          borderRadius: 8,
+          overflow: 'hidden',
         }}>
 
           {/* Header stripe */}
-          <div style={{ background: '#0f0e0d', padding: '2.5rem 3rem 2rem', position: 'relative', overflow: 'hidden' }}>
+          <div className="receipt-header-stripe" style={{ background: '#0f0e0d', padding: '2.5rem 3rem 2rem', position: 'relative', overflow: 'hidden' }}>
             {/* Decorative circles */}
             <div style={{ position: 'absolute', top: -60, right: -60, width: 220, height: 220, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.04)' }} />
             <div style={{ position: 'absolute', bottom: -80, left: -40, width: 260, height: 260, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.04)' }} />
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative' }}>
+            <div className="receipt-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative' }}>
               {/* Brand */}
               <div>
                 <div style={{ fontFamily: 'var(--font-playfair), "Playfair Display", serif', fontSize: '2rem', fontWeight: 700, color: 'white', letterSpacing: '-0.01em', lineHeight: 1 }}>
@@ -182,14 +201,14 @@ export default function ReceiptPage() {
               </div>
 
               {/* Invoice meta */}
-              <div style={{ textAlign: 'right' }}>
+              <div className="receipt-meta" style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: '0.6rem', fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '0.375rem' }}>
                   Invoice
                 </div>
                 <div style={{ fontFamily: 'var(--font-playfair), "Playfair Display", serif', fontSize: '1.5rem', fontWeight: 700, color: 'white', letterSpacing: '0.01em' }}>
                   {invNum}
                 </div>
-                <div style={{ marginTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', alignItems: 'flex-end' }}>
+                <div className="receipt-meta" style={{ marginTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', alignItems: 'flex-end' }}>
                   <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.35)' }}>
                     Date: <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>{orderDate}</span>
                   </div>
@@ -212,7 +231,7 @@ export default function ReceiptPage() {
           <div style={{ height: 3, background: 'linear-gradient(90deg, #b91c1c 0%, #dc2626 50%, #ef4444 100%)' }} />
 
           {/* Bill To / Ship To / Delivery */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 0, borderBottom: '1px solid #f0ede8' }}>
+          <div className="receipt-addresses" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 0, borderBottom: '1px solid #f0ede8' }}>
             {[
               {
                 title: 'Bill To',
@@ -251,7 +270,7 @@ export default function ReceiptPage() {
                 ),
               },
             ].map((col, i) => (
-              <div key={i} style={{ padding: '1.75rem 2rem', borderRight: i < 2 ? '1px solid #f0ede8' : 'none' }}>
+              <div key={i} className="receipt-address-col" style={{ padding: '1.75rem 2rem', borderRight: i < 2 ? '1px solid #f0ede8' : 'none' }}>
                 <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#b91c1c', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '0.75rem' }}>
                   {col.title}
                 </div>
@@ -269,49 +288,55 @@ export default function ReceiptPage() {
           </div>
 
           {/* Items table */}
-          <div style={{ padding: '0 2rem' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ borderBottom: '2px solid #f0ede8' }}>
-                  {['Item', 'Options', 'Qty', 'Unit Price', 'Total'].map((h, i) => (
-                    <th key={h} style={{
-                      padding: '1rem 0.75rem',
-                      fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em',
-                      textTransform: 'uppercase', color: '#9ca3af',
-                      textAlign: i === 0 ? 'left' : i < 2 ? 'left' : 'right',
-                    }}>
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((item, i) => (
-                  <tr key={item.id || i} style={{ borderBottom: '1px solid #f8f7f5' }}>
-                    <td style={{ padding: '1rem 0.75rem', fontSize: '0.875rem', fontWeight: 600, color: '#1a1a1a', maxWidth: 220 }}>
-                      {item.product_name}
-                    </td>
-                    <td style={{ padding: '1rem 0.75rem', fontSize: '0.78rem', color: '#6b7280' }}>
-                      {[item.color_name, item.size].filter(Boolean).join(' / ') || '—'}
-                    </td>
-                    <td style={{ padding: '1rem 0.75rem', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
-                      {item.qty}
-                    </td>
-                    <td style={{ padding: '1rem 0.75rem', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
-                      ${Number(item.price).toFixed(2)}
-                    </td>
-                    <td style={{ padding: '1rem 0.75rem', fontSize: '0.875rem', fontWeight: 700, color: '#1a1a1a', textAlign: 'right' }}>
-                      ${(Number(item.price) * item.qty).toFixed(2)}
-                    </td>
+          <div className="receipt-table-wrapper" style={{ padding: '0 2rem' }}>
+            <div className="receipt-table-inner">
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ borderBottom: '2px solid #f0ede8' }}>
+                    {['Item', 'Options', 'Qty', 'Unit Price', 'Total'].map((h, i) => (
+                      <th key={h} className={i === 1 || i === 3 ? 'hide-mobile' : ''} style={{
+                        padding: '1rem 0.75rem',
+                        fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em',
+                        textTransform: 'uppercase', color: '#9ca3af',
+                        textAlign: i === 0 ? 'left' : i < 2 ? 'left' : 'right',
+                      }}>
+                        {h}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {items.map((item, i) => (
+                    <tr key={item.id || i} style={{ borderBottom: '1px solid #f8f7f5' }}>
+                      <td style={{ padding: '1rem 0.75rem', fontSize: '0.875rem', fontWeight: 600, color: '#1a1a1a', maxWidth: 220 }}>
+                        {item.product_name}
+                        <div className="show-mobile" style={{ display: 'none', fontSize: '0.72rem', color: '#6b7280', marginTop: 4, fontWeight: 400 }}>
+                          {[item.color_name, item.size].filter(Boolean).join(' / ') || '—'}
+                          <div style={{ marginTop: 2 }}>${Number(item.price).toFixed(2)} each</div>
+                        </div>
+                      </td>
+                      <td className="hide-mobile" style={{ padding: '1rem 0.75rem', fontSize: '0.78rem', color: '#6b7280' }}>
+                        {[item.color_name, item.size].filter(Boolean).join(' / ') || '—'}
+                      </td>
+                      <td style={{ padding: '1rem 0.75rem', fontSize: '0.875rem', color: '#374151', textAlign: 'right', verticalAlign: 'top' }}>
+                        {item.qty}
+                      </td>
+                      <td className="hide-mobile" style={{ padding: '1rem 0.75rem', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                        ${Number(item.price).toFixed(2)}
+                      </td>
+                      <td style={{ padding: '1rem 0.75rem', fontSize: '0.875rem', fontWeight: 700, color: '#1a1a1a', textAlign: 'right', verticalAlign: 'top' }}>
+                        ${(Number(item.price) * item.qty).toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Totals */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 2rem 2rem' }}>
-            <div style={{ width: 300 }}>
+          <div className="receipt-totals" style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 2rem 2rem' }}>
+            <div className="receipt-totals-inner" style={{ width: 300 }}>
               <div style={{ height: '1px', background: '#f0ede8', marginBottom: '1rem' }} />
               {[
                 { label: 'Subtotal', value: `$${subtotal.toFixed(2)}`, muted: true },
@@ -363,7 +388,7 @@ export default function ReceiptPage() {
           )}
 
           {/* Footer */}
-          <div style={{ background: '#fafaf8', borderTop: '1px solid #f0ede8', padding: '1.75rem 3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <div className="receipt-footer" style={{ background: '#fafaf8', borderTop: '1px solid #f0ede8', padding: '1.75rem 3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
             <div>
               <div style={{ fontFamily: 'var(--font-playfair), "Playfair Display", serif', fontSize: '0.9rem', fontWeight: 700, color: '#0f0e0d', marginBottom: '0.2rem' }}>
                 Redleaf

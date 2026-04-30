@@ -1,6 +1,39 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
+
+function FadeIn({ children, delay = 0, y = 24 }: { children: React.ReactNode, delay?: number, y?: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+          observer.unobserve(entry.target)
+        }
+      },
+      { rootMargin: '0px 0px -50px 0px', threshold: 0.1 }
+    )
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? 'translateY(0)' : `translateY(${y}px)`,
+        transition: `all 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s`,
+      }}
+    >
+      {children}
+    </div>
+  )
+}
 
 export default function AboutPage() {
   const router = useRouter()
@@ -37,10 +70,7 @@ export default function AboutPage() {
     },
     heroRightBg: {
       position: 'absolute', inset: 0,
-      background: `repeating-linear-gradient(
-        -45deg,
-        oklch(0.96 0.005 80) 0px, oklch(0.96 0.005 80) 1px,
-        oklch(0.97 0.005 80) 1px, oklch(0.97 0.005 80) 14px)`,
+      background: `url(/images/about/about_hero.png) center/cover`,
     },
     story: {
       display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0,
@@ -50,7 +80,7 @@ export default function AboutPage() {
     storyRight: { padding: '80px 48px' },
     storyImg: {
       height: 320, borderRadius: 4, marginBottom: 28,
-      background: `repeating-linear-gradient(45deg, oklch(0.94 0.02 27) 0px, oklch(0.94 0.02 27) 1px, oklch(0.96 0.015 27) 1px, oklch(0.96 0.015 27) 12px)`,
+      background: `url(/images/about/about_story.png) center/cover`,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     },
     storyImgLabel: {
@@ -161,10 +191,10 @@ export default function AboutPage() {
   ]
 
   const team = [
-    { name: 'Eliot Ward', role: 'Co-Founder & CEO', bio: 'Former outdoor gear designer. Believes in buying one good thing instead of ten cheap ones.', bg: 'oklch(0.93 0.03 27)' },
-    { name: 'Dana Cho', role: 'Co-Founder & Creative Director', bio: 'Trained in textile design at Central Saint Martins. Obsessed with material honesty.', bg: 'oklch(0.93 0.02 220)' },
-    { name: 'Rémy Laurent', role: 'Head of Production', bio: 'Built factory relationships across Portugal, Japan, and Peru over 15 years of sourcing.', bg: 'oklch(0.93 0.02 150)' },
-    { name: 'Ama Ofori', role: 'Head of Community', bio: 'Turned a 5,000-person email list into the most engaged community in slow fashion.', bg: 'oklch(0.93 0.02 80)' },
+    { name: 'Eliot Ward', role: 'Co-Founder & CEO', bio: 'Former outdoor gear designer. Believes in buying one good thing instead of ten cheap ones.', bg: 'url(/images/about/team_1.png) center/cover' },
+    { name: 'Dana Cho', role: 'Co-Founder & Creative Director', bio: 'Trained in textile design at Central Saint Martins. Obsessed with material honesty.', bg: 'url(/images/about/team_2.png) center/cover' },
+    { name: 'Rémy Laurent', role: 'Head of Production', bio: 'Built factory relationships across Portugal, Japan, and Peru over 15 years of sourcing.', bg: 'url(/images/about/team_3.png) center/cover' },
+    { name: 'Ama Ofori', role: 'Head of Community', bio: 'Turned a 5,000-person email list into the most engaged community in slow fashion.', bg: 'url(/images/about/team_4.png) center/cover' },
   ]
 
   return (
@@ -172,99 +202,117 @@ export default function AboutPage() {
       {/* HERO */}
       <section style={S.hero} className="rsp-hero">
         <div style={S.heroLeft}>
-          <div style={S.heroEyebrow}>Our Story</div>
-          <h1 style={S.heroTitle}>Made to<br />Last. Built<br />with Care.</h1>
-          <p style={S.heroDesc}>
-            Redleaf started with a simple conviction: the clothing industry was making things wrong. We set out to prove there was a better way.
-          </p>
+          <FadeIn delay={0.1}>
+            <div style={S.heroEyebrow}>Our Story</div>
+            <h1 style={S.heroTitle}>Made to<br />Last. Built<br />with Care.</h1>
+            <p style={S.heroDesc}>
+              Redleaf started with a simple conviction: the clothing industry was making things wrong. We set out to prove there was a better way.
+            </p>
+          </FadeIn>
         </div>
         <div style={S.heroRight}>
           <div style={S.heroRightBg} />
-          <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-            <div style={{ background: 'white', padding: '8px 18px', borderRadius: 2, fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--red)', fontWeight: 700 }}>
-              Brand Photography
+          <FadeIn delay={0.3} y={10}>
+            <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+              <div style={{ background: 'white', padding: '8px 18px', borderRadius: 2, fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--red)', fontWeight: 700 }}>
+                Brand Photography
+              </div>
+              <div style={{ fontSize: '0.58rem', color: 'var(--ink-soft)', letterSpacing: '0.06em' }}>Studio / Portland, OR</div>
             </div>
-            <div style={{ fontSize: '0.58rem', color: 'var(--ink-soft)', letterSpacing: '0.06em' }}>Studio / Portland, OR</div>
-          </div>
+          </FadeIn>
         </div>
       </section>
 
       {/* STORY */}
       <section style={S.story} className="rsp-2col">
         <div style={S.storyLeft}>
-          <div style={S.storyImg}>
-            <div style={S.storyImgLabel}>Founders — 2014</div>
-          </div>
-          <div style={S.bodyTitle}>A Garage in Portland</div>
-          <p style={S.bodyText}>
-            In 2014, Eliot Ward and Dana Cho were fed up. They'd both spent years in the fashion industry — Eliot in technical outerwear, Dana in textile design — watching brands cut corners, inflate margins, and cynically market "sustainable" collections while business-as-usual continued behind the scenes.
-          </p>
-          <p style={S.bodyText}>
-            So they quit. They pooled their savings, rented a Portland garage, and started calling factories. The brief was simple: make one jacket. Make it perfectly. Don't rush it.
-          </p>
-          <div style={S.pullQuote}>
-            "We wanted to make something our grandchildren would find in an attic and think someone really cared about this."
-            <div style={{ fontSize: '0.75rem', marginTop: 8, fontStyle: 'normal', fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", color: 'var(--ink-soft)', fontWeight: 600 }}>— Eliot Ward, Co-Founder</div>
-          </div>
+          <FadeIn delay={0.1}>
+            <div style={S.storyImg}>
+              <div style={S.storyImgLabel}>Founders — 2014</div>
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.2}>
+            <div style={S.bodyTitle}>A Garage in Portland</div>
+            <p style={S.bodyText}>
+              In 2014, Eliot Ward and Dana Cho were fed up. They'd both spent years in the fashion industry — Eliot in technical outerwear, Dana in textile design — watching brands cut corners, inflate margins, and cynically market "sustainable" collections while business-as-usual continued behind the scenes.
+            </p>
+            <p style={S.bodyText}>
+              So they quit. They pooled their savings, rented a Portland garage, and started calling factories. The brief was simple: make one jacket. Make it perfectly. Don't rush it.
+            </p>
+            <div style={S.pullQuote}>
+              "We wanted to make something our grandchildren would find in an attic and think someone really cared about this."
+              <div style={{ fontSize: '0.75rem', marginTop: 8, fontStyle: 'normal', fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif", color: 'var(--ink-soft)', fontWeight: 600 }}>— Eliot Ward, Co-Founder</div>
+            </div>
+          </FadeIn>
         </div>
         <div style={S.storyRight}>
           <div style={{ height: 32 }} />
-          <div style={S.bodyTitle}>The Redleaf Standard</div>
-          <p style={S.bodyText}>
-            The first jacket took eight months. Eight months of sourcing waxed cotton from Scottish mills, finding a family-run Portuguese factory that understood what they were trying to do, and iterating on a pattern until it was right.
-          </p>
-          <p style={S.bodyText}>
-            When it launched, they made 200. They sold out in 11 days, without a single ad. Every customer was a referral. That told them everything they needed to know.
-          </p>
-          <p style={S.bodyText}>
-            Today, Redleaf makes 12 core pieces and a small seasonal collection. We've deliberately stayed small. We audit every factory. We publish every material origin. We offer a two-year warranty because we believe in what we make.
-          </p>
-          <p style={S.bodyText}>
-            Fast fashion optimises for transactions. We optimise for trust — with our makers, with the environment, and with you.
-          </p>
-          <div style={{ display: 'flex', gap: 12, marginTop: 28 }}>
-            <button className="btn-primary" onClick={() => router.push('/shop')}>Shop the Collection</button>
-            <button className="btn-outline" onClick={() => router.push('/contact')}>Get in Touch</button>
-          </div>
+          <FadeIn delay={0.3}>
+            <div style={S.bodyTitle}>The Redleaf Standard</div>
+            <p style={S.bodyText}>
+              The first jacket took eight months. Eight months of sourcing waxed cotton from Scottish mills, finding a family-run Portuguese factory that understood what they were trying to do, and iterating on a pattern until it was right.
+            </p>
+            <p style={S.bodyText}>
+              When it launched, they made 200. They sold out in 11 days, without a single ad. Every customer was a referral. That told them everything they needed to know.
+            </p>
+            <p style={S.bodyText}>
+              Today, Redleaf makes 12 core pieces and a small seasonal collection. We've deliberately stayed small. We audit every factory. We publish every material origin. We offer a two-year warranty because we believe in what we make.
+            </p>
+            <p style={S.bodyText}>
+              Fast fashion optimises for transactions. We optimise for trust — with our makers, with the environment, and with you.
+            </p>
+            <div style={{ display: 'flex', gap: 12, marginTop: 28 }}>
+              <button className="btn-primary" onClick={() => router.push('/shop')}>Shop the Collection</button>
+              <button className="btn-outline" onClick={() => router.push('/contact')}>Get in Touch</button>
+            </div>
+          </FadeIn>
         </div>
       </section>
 
       {/* VALUES */}
       <section style={S.values} className="rsp-px">
-        <div style={S.valuesHeader}>
-          <div className="section-eyebrow">What We Stand For</div>
-          <div className="section-title">Our Six Commitments</div>
-        </div>
+        <FadeIn delay={0.1}>
+          <div style={S.valuesHeader}>
+            <div className="section-eyebrow">What We Stand For</div>
+            <div className="section-title">Our Six Commitments</div>
+          </div>
+        </FadeIn>
         <div style={S.valuesGrid} className="rsp-3col">
           {values.map((v, i) => (
-            <div key={i} style={S.valueCard}>
-              <div style={S.valueNum}>0{i + 1}</div>
-              <div style={S.valueIcon}>{v.icon}</div>
-              <div style={S.valueTitle}>{v.title}</div>
-              <p style={S.valueText}>{v.text}</p>
-            </div>
+            <FadeIn key={i} delay={0.1 + (i * 0.1)}>
+              <div style={S.valueCard}>
+                <div style={S.valueNum}>0{i + 1}</div>
+                <div style={S.valueIcon}>{v.icon}</div>
+                <div style={S.valueTitle}>{v.title}</div>
+                <p style={S.valueText}>{v.text}</p>
+              </div>
+            </FadeIn>
           ))}
         </div>
       </section>
 
       {/* TIMELINE */}
       <section style={S.timeline} className="rsp-px">
-        <div style={{ textAlign: 'center', marginBottom: 8 }}>
-          <div className="section-eyebrow">Our Journey</div>
-          <div className="section-title">From Garage to Global</div>
-        </div>
+        <FadeIn delay={0.1}>
+          <div style={{ textAlign: 'center', marginBottom: 8 }}>
+            <div className="section-eyebrow">Our Journey</div>
+            <div className="section-title">From Garage to Global</div>
+          </div>
+        </FadeIn>
         <div style={S.timelineInner}>
           <div style={S.timelineItems}>
             <div style={S.timelineLine} />
             {timeline.map((t, i) => (
-              <div key={i} style={S.timelineItem}>
-                <div style={S.timelineYear}>{t.year}</div>
-                <div style={S.timelineDot} />
-                <div style={S.timelineContent}>
-                  <div style={S.timelineTitle}>{t.title}</div>
-                  <div style={S.timelineText}>{t.text}</div>
+              <FadeIn key={i} delay={0.1 + (i * 0.1)}>
+                <div style={S.timelineItem}>
+                  <div style={S.timelineYear}>{t.year}</div>
+                  <div style={S.timelineDot} />
+                  <div style={S.timelineContent}>
+                    <div style={S.timelineTitle}>{t.title}</div>
+                    <div style={S.timelineText}>{t.text}</div>
+                  </div>
                 </div>
-              </div>
+              </FadeIn>
             ))}
           </div>
         </div>
@@ -272,30 +320,38 @@ export default function AboutPage() {
 
       {/* TEAM */}
       <section style={S.team} className="rsp-px">
-        <div style={{ textAlign: 'center' }}>
-          <div className="section-eyebrow">The People Behind Redleaf</div>
-          <div className="section-title">Meet the Team</div>
-        </div>
+        <FadeIn delay={0.1}>
+          <div style={{ textAlign: 'center' }}>
+            <div className="section-eyebrow">The People Behind Redleaf</div>
+            <div className="section-title">Meet the Team</div>
+          </div>
+        </FadeIn>
         <div style={S.teamGrid} className="rsp-4col">
           {team.map((m, i) => (
-            <div key={i} style={S.teamCard}>
-              <div style={{ ...S.teamPhoto, background: m.bg }}>Portrait</div>
-              <div style={S.teamName}>{m.name}</div>
-              <div style={S.teamRole}>{m.role}</div>
-              <p style={S.teamBio}>{m.bio}</p>
-            </div>
+            <FadeIn key={i} delay={0.1 + (i * 0.1)}>
+              <div style={S.teamCard}>
+                <div style={{ ...S.teamPhoto, background: m.bg }}></div>
+                <div style={S.teamName}>{m.name}</div>
+                <div style={S.teamRole}>{m.role}</div>
+                <p style={S.teamBio}>{m.bio}</p>
+              </div>
+            </FadeIn>
           ))}
         </div>
       </section>
 
       {/* CTA */}
       <section style={S.cta}>
-        <div className="section-eyebrow" style={{ color: 'var(--red)' }}>Ready to wear better?</div>
-        <div style={S.ctaTitle}>Shop the Collection</div>
-        <p style={S.ctaSub}>Every piece is in stock, ships in 24 hours, and comes with our two-year guarantee.</p>
-        <button className="btn-primary" style={{ height: 54, fontSize: '0.82rem' }} onClick={() => router.push('/shop')}>
-          Explore All Products →
-        </button>
+        <FadeIn delay={0.1}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
+            <div className="section-eyebrow" style={{ color: 'var(--red)' }}>Ready to wear better?</div>
+            <div style={S.ctaTitle}>Shop the Collection</div>
+            <p style={S.ctaSub}>Every piece is in stock, ships in 24 hours, and comes with our two-year guarantee.</p>
+            <button className="btn-primary" style={{ height: 54, fontSize: '0.82rem' }} onClick={() => router.push('/shop')}>
+              Explore All Products →
+            </button>
+          </div>
+        </FadeIn>
       </section>
     </div>
   )
