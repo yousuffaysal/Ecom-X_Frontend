@@ -19,7 +19,7 @@ export async function middleware(request: NextRequest) {
     }
     try {
       const { payload } = await jwtVerify(token, secret())
-      if (payload.role !== 'admin') {
+      if (!['admin', 'moderator', 'staff'].includes(payload.role as string)) {
         return NextResponse.redirect(new URL('/', request.url))
       }
     } catch {
