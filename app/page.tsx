@@ -257,7 +257,9 @@ export default function HomePage() {
               key={cat.id}
               style={{
                 ...S.catCard,
-                background: cat.image_url ? `url(${cat.image_url}) center/cover` : catColors[i % catColors.length],
+                background: ['bottoms', 'knitwear', 'outerwear', 'tops'].includes(cat.slug) 
+                  ? `url(/images/categories/${cat.slug}.png) center/cover`
+                  : (cat.image_url ? `url(${cat.image_url}) center/cover` : catColors[i % catColors.length]),
               }}
               onClick={() => router.push('/shop?cat=' + cat.slug)}
               onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-6px)')}
