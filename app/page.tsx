@@ -201,11 +201,8 @@ export default function HomePage() {
           </div>
         </div>
         <div style={S.heroRight}>
-          <div style={S.heroPlaceholder}>
-            <div style={S.heroImgLabel}>Campaign Photography</div>
-            <div style={{ fontSize: '0.6rem', color: 'var(--red-dark)', letterSpacing: '0.06em' }}>SS26 Hero — Full Bleed</div>
-          </div>
-          <div style={S.heroBadge}>
+          <img src="https://ik.imagekit.io/2lax2ytm2/heloLeaf.jpeg" alt="Spring/Summer 2026 Campaign" style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0, zIndex: 0 }} />
+          <div style={{ ...S.heroBadge, zIndex: 1 }}>
             <div style={S.heroBadgeNum}>12+</div>
             <div style={S.heroBadgeLbl}>New Arrivals<br />This Season</div>
           </div>
