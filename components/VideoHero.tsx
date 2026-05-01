@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 // ── Replace with your hosted video URL ────────────────────────────────────────
 // Upload to Cloudinary (account: dlvlxrvvd) or any CDN, paste the URL below.
 // e.g. 'https://res.cloudinary.com/dlvlxrvvd/video/upload/v1/your-video.mp4'
-const VIDEO_URL = ''
+const VIDEO_URL = 'https://ik.imagekit.io/2lax2ytm2/c7b461ffd61ef36eb4f4f18f7d055859_720w.mov'
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function VideoHero() {
@@ -48,17 +48,33 @@ export default function VideoHero() {
   return (
     /* Narrow margin wrapper — gives the side + top/bottom spacing */
     <div style={{ padding: '2.5rem 1.5rem' }}>
-
+      <style>{`
+        .video-hero-sticky {
+          height: calc(100vh - 2.5rem);
+        }
+        .video-hero-container {
+          height: 160vh;
+        }
+        @media screen and (max-width: 768px) {
+          .video-hero-sticky {
+            height: 60vh !important;
+            min-height: 400px;
+          }
+          .video-hero-container {
+            height: 120vh !important;
+          }
+        }
+      `}</style>
       {/* Tall scroll container — shorter than before (160vh total) */}
       <div
+        className="video-hero-container"
         ref={containerRef}
-        style={{ height: '160vh', position: 'relative' }}
+        style={{ position: 'relative' }}
       >
         {/* Sticky rounded card */}
-        <div style={{
+        <div className="video-hero-sticky" style={{
           position: 'sticky',
           top: '1.25rem',
-          height: 'calc(100vh - 2.5rem)',
           borderRadius: 24,
           overflow: 'hidden',
           background: '#080706',
@@ -79,7 +95,7 @@ export default function VideoHero() {
                 autoPlay muted loop playsInline
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
               >
-                <source src={VIDEO_URL} type="video/mp4" />
+                <source src={VIDEO_URL} />
               </video>
             ) : (
               <div style={{

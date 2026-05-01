@@ -173,6 +173,7 @@ img { display: block; max-width: 100%; }
 .product-card-price-original { font-size: 0.82rem; color: var(--ink-soft); text-decoration: line-through; }
 .product-card-stars { display: flex; gap: 2px; align-items: center; margin-top: 4px; }
 .product-card-rating { font-size: 0.72rem; color: var(--ink-soft); margin-left: 4px; }
+.product-card-mobile-btn { display: none; margin-top: 12px; }
 
 /* ─── SECTION LABELS ─── */
 .section-eyebrow {
@@ -418,6 +419,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
   /* ── Product card quick-add hidden (no hover on touch) ── */
   .product-card-quick { opacity: 0 !important; pointer-events: none !important; }
+  .product-card-mobile-btn { display: block !important; }
 
   /* ── Breadcrumb wrap ── */
   .breadcrumb { flex-wrap: wrap !important; }

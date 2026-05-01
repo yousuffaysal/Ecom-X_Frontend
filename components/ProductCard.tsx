@@ -82,6 +82,18 @@ export default function ProductCard({ product }: { product: ApiProduct }) {
         <Stars rating={product.rating} size="0.72rem" />
         <span className="product-card-rating">({product.review_count})</span>
       </div>
+      <div className="product-card-mobile-btn">
+        <button
+          className="btn-outline"
+          style={{ width: '100%', height: 40, fontSize: '0.72rem' }}
+          onClick={(e) => {
+            e.stopPropagation()
+            router.push('/product/' + product.slug)
+          }}
+        >
+          View Details
+        </button>
+      </div>
     </div>
   )
 }
