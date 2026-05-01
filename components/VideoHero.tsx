@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 
 // ── Replace with your hosted video URL ────────────────────────────────────────
 // Upload to Cloudinary (account: dlvlxrvvd) or any CDN, paste the URL below.
@@ -45,6 +46,28 @@ export default function VideoHero() {
     return () => window.removeEventListener('scroll', update)
   }, [])
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1, 
+      transition: { 
+        duration: 1.5, 
+        ease: [0.22, 1, 0.36, 1],
+        when: "beforeChildren",
+        staggerChildren: 0.2
+      } 
+    }
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 1.2, ease: [0.22, 1, 0.36, 1] }
+    }
+  }
+
   return (
     /* Narrow margin wrapper — gives the side + top/bottom spacing */
     <div style={{ padding: '2.5rem 1.5rem' }}>
@@ -72,18 +95,28 @@ export default function VideoHero() {
         style={{ position: 'relative' }}
       >
         {/* Sticky rounded card */}
-        <div className="video-hero-sticky" style={{
-          position: 'sticky',
-          top: '1.25rem',
-          borderRadius: 24,
-          overflow: 'hidden',
-          background: '#080706',
-          boxShadow: '0 24px 64px rgba(0,0,0,0.28), 0 4px 16px rgba(0,0,0,0.18)',
-        }}>
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={containerVariants}
+          className="video-hero-sticky" 
+          style={{
+            position: 'sticky',
+            top: '1.25rem',
+            borderRadius: 24,
+            overflow: 'hidden',
+            background: '#080706',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.28), 0 4px 16px rgba(0,0,0,0.18)',
+          }}
+        >
 
           {/* Zoomable background */}
-          <div
+          <motion.div
             ref={bgRef}
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1.2 }}
+            transition={{ duration: 2.5, ease: [0.22, 1, 0.36, 1] }}
             style={{
               position: 'absolute', inset: 0,
               transformOrigin: 'center center',
@@ -115,7 +148,7 @@ export default function VideoHero() {
                 }} />
               </div>
             )}
-          </div>
+          </motion.div>
 
           {/* Depth overlay */}
           <div style={{
@@ -135,15 +168,15 @@ export default function VideoHero() {
               willChange: 'transform, opacity',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.75rem' }}>
+            <motion.div variants={itemVariants} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.75rem' }}>
               <div style={{ width: 32, height: 1, background: 'rgba(255,255,255,0.28)' }} />
               <span style={{ fontSize: '0.58rem', fontWeight: 700, color: 'rgba(255,255,255,0.42)', letterSpacing: '0.3em', textTransform: 'uppercase' }}>
                 Spring / Summer 2026
               </span>
               <div style={{ width: 32, height: 1, background: 'rgba(255,255,255,0.28)' }} />
-            </div>
+            </motion.div>
 
-            <h2 style={{
+            <motion.h2 variants={itemVariants} style={{
               fontFamily: 'var(--font-playfair)',
               fontSize: 'clamp(2.75rem, 7vw, 6.5rem)',
               fontWeight: 900, color: 'white',
@@ -152,18 +185,18 @@ export default function VideoHero() {
             }}>
               Find Your<br />
               <span style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.38)' }}>Perfect Fit</span>
-            </h2>
+            </motion.h2>
 
-            <p style={{
+            <motion.p variants={itemVariants} style={{
               fontSize: 'clamp(0.82rem, 1.4vw, 0.95rem)',
               color: 'rgba(255,255,255,0.38)', maxWidth: 460,
               lineHeight: 1.72, marginBottom: '2.5rem',
             }}>
               Every piece in the SS26 collection is built to last a lifetime —<br />
               designed with precision, sourced with integrity.
-            </p>
+            </motion.p>
 
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <motion.div variants={itemVariants} style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               <button
                 onClick={() => router.push('/shop')}
                 style={{
@@ -193,12 +226,15 @@ export default function VideoHero() {
               >
                 Ask Aria →
               </button>
-            </div>
+            </motion.div>
           </div>
 
           {/* Scroll hint */}
-          <div
+          <motion.div
             ref={scrollRef}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5, duration: 1 }}
             style={{
               position: 'absolute', bottom: '2rem', left: '50%',
               transform: 'translateX(-50%)',
@@ -215,9 +251,9 @@ export default function VideoHero() {
               background: 'linear-gradient(to bottom, rgba(255,255,255,0.35), transparent)',
               animation: 'scrollPulse 2s ease infinite',
             }} />
-          </div>
+          </motion.div>
 
-        </div>
+        </motion.div>
       </div>
     </div>
   )

@@ -6,38 +6,25 @@ import ProductCard, { type ApiProduct } from '@/components/ProductCard'
 import Stars from '@/components/Stars'
 import { testimonials } from '@/lib/data'
 import VideoHero from '@/components/VideoHero'
+import Counter from '@/components/Counter'
+import { motion } from 'framer-motion'
 
-function FadeIn({ children, delay = 0, y = 24, className = '', style = {} }: { children: React.ReactNode, delay?: number, y?: number, className?: string, style?: React.CSSProperties }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-          observer.unobserve(entry.target)
-        }
-      },
-      { rootMargin: '0px 0px -50px 0px', threshold: 0.1 }
-    )
-    if (ref.current) observer.observe(ref.current)
-    return () => observer.disconnect()
-  }, [])
-
+function FadeIn({ children, delay = 0, y = 30, className = '', style = {} }: { children: React.ReactNode, delay?: number, y?: number, className?: string, style?: React.CSSProperties }) {
   return (
-    <div
-      ref={ref}
-      className={className}
-      style={{
-        ...style,
-        opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0)' : `translateY(${y}px)`,
-        transition: `all 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s`,
+    <motion.div
+      initial={{ opacity: 0, y }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ 
+        duration: 1.2, 
+        delay, 
+        ease: [0.22, 1, 0.36, 1] 
       }}
+      className={className}
+      style={style}
     >
       {children}
-    </div>
+    </motion.div>
   )
 }
 
@@ -218,18 +205,24 @@ export default function HomePage() {
       {/* HERO */}
       <section style={S.hero} className="rsp-hero">
         <div style={S.heroLeft}>
-          <FadeIn delay={0.1}>
+          <FadeIn delay={0.2}>
             <div style={S.heroEyebrow}>
               <span style={S.heroLine} />
               Spring / Summer 2026 Collection
             </div>
+          </FadeIn>
+          <FadeIn delay={0.4}>
             <h1 style={S.heroTitle}>
               Wear What<br />
               <span style={S.heroTitleRed}>Endures.</span>
             </h1>
+          </FadeIn>
+          <FadeIn delay={0.6}>
             <p style={S.heroDesc}>
               Redleaf makes clothing for people who are done with disposable fashion. Every piece is designed with precision, sourced with integrity, and built to last a lifetime.
             </p>
+          </FadeIn>
+          <FadeIn delay={0.8}>
             <div style={S.heroBtns} className="rsp-btns">
               <button className="btn-primary" onClick={() => router.push('/shop')}>Shop Collection</button>
               <button className="btn-outline" onClick={() => router.push('/about')}>Our Story</button>
@@ -237,9 +230,18 @@ export default function HomePage() {
           </FadeIn>
         </div>
         <div style={S.heroRight}>
-          <img src="https://ik.imagekit.io/2lax2ytm2/heloLeaf.jpeg" alt="Spring/Summer 2026 Campaign" style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0, zIndex: 0 }} />
+          <motion.img 
+            initial={{ scale: 1.05, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 2.5, ease: [0.22, 1, 0.36, 1] }}
+            src="https://ik.imagekit.io/2lax2ytm2/heloLeaf.jpeg" 
+            alt="Spring/Summer 2026 Campaign" 
+            style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0, zIndex: 0 }} 
+          />
           <FadeIn delay={0.3} y={0} style={{ ...S.heroBadge, zIndex: 1 }}>
-            <div style={S.heroBadgeNum}>12+</div>
+            <div style={S.heroBadgeNum}>
+              <Counter value={12} suffix="+" />
+            </div>
             <div style={S.heroBadgeLbl}>New Arrivals<br />This Season</div>
           </FadeIn>
         </div>
@@ -529,15 +531,17 @@ export default function HomePage() {
         </FadeIn>
         <div style={S.bannerRight}>
           {[
-            { num: '10+', lbl: 'Years of craftsmanship\nand design excellence' },
-            { num: '98%', lbl: 'Customer satisfaction\nacross 40,000+ orders' },
-            { num: '2yr', lbl: 'Warranty on every\npiece we make' },
+            { num: 10, suffix: '+', lbl: 'Years of craftsmanship\nand design excellence' },
+            { num: 98, suffix: '%', lbl: 'Customer satisfaction\nacross 40,000+ orders' },
+            { num: 2, suffix: 'yr', lbl: 'Warranty on every\npiece we make' },
           ].map((stat, i) => (
             <FadeIn key={i} delay={0.1 + (i * 0.1)}>
               <div>
                 {i > 0 && <div style={S.bannerDivider} />}
                 <div style={S.bannerStat}>
-                  <div style={S.bannerStatNum}>{stat.num}</div>
+                  <div style={S.bannerStatNum}>
+                    <Counter value={stat.num} suffix={stat.suffix} />
+                  </div>
                   <div style={S.bannerStatLbl}>{stat.lbl.split('\n').map((l, j) => <div key={j}>{l}</div>)}</div>
                 </div>
               </div>
@@ -566,7 +570,7 @@ export default function HomePage() {
           </FadeIn>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="rsp-2col">
             {[
-              { icon: '♻', label: '100% Traceable', desc: 'Every material is tracked from origin to your door' },
+              { icon: '♻', label: <><Counter value={100} suffix="%" /> Traceable</>, desc: 'Every material is tracked from origin to your door' },
               { icon: '✈', label: 'Carbon Neutral Shipping', desc: 'All deliveries offset through verified reforestation' },
               { icon: '♡', label: 'Fair Wages Certified', desc: 'All factory workers paid above living wage' },
               { icon: '⟳', label: 'Lifetime Repair Service', desc: "Send it back — we'll fix it, free of charge" },
