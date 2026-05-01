@@ -389,7 +389,19 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .rsp-3col { grid-template-columns: 1fr !important; gap: 20px !important; }
   .rsp-4col { grid-template-columns: 1fr 1fr !important; gap: 16px !important; }
   .rsp-6col { grid-template-columns: repeat(3, 1fr) !important; gap: 6px !important; }
-  .rsp-hero { grid-template-columns: 1fr !important; min-height: auto !important; }
+  .rsp-hero { 
+    display: flex !important;
+    flex-direction: column-reverse !important;
+    min-height: auto !important; 
+  }
+  .rsp-hero-left {
+    padding: 48px 20px 80px !important;
+  }
+  .rsp-hero-right {
+    height: 420px !important;
+    width: 100% !important;
+    position: relative !important;
+  }
   .rsp-bento { grid-template-columns: 1fr 1fr !important; grid-auto-rows: 200px !important; }
   .rsp-bento-item { grid-column: span 1 !important; grid-row: span 1 !important; }
 
@@ -433,7 +445,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .admin-mobile-topbar { display: flex !important; }
 
   /* ── Homepage hero ── */
-  .rsp-hero { min-height: auto !important; }
 
   /* ── USP cards border fix (stacked) ── */
   .rsp-3col > div { border-right: none !important; border-bottom: 1px solid oklch(0.18 0.01 30) !important; }

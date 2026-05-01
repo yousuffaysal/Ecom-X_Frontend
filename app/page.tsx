@@ -204,7 +204,7 @@ export default function HomePage() {
     <div className="page-enter">
       {/* HERO */}
       <section style={S.hero} className="rsp-hero">
-        <div style={S.heroLeft}>
+        <div style={S.heroLeft} className="rsp-hero-left">
           <FadeIn delay={0.2}>
             <div style={S.heroEyebrow}>
               <span style={S.heroLine} />
@@ -229,7 +229,7 @@ export default function HomePage() {
             </div>
           </FadeIn>
         </div>
-        <div style={S.heroRight}>
+        <div style={S.heroRight} className="rsp-hero-right">
           <motion.img 
             initial={{ scale: 1.05, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}

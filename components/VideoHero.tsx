@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 // ── Replace with your hosted video URL ────────────────────────────────────────
 // Upload to Cloudinary (account: dlvlxrvvd) or any CDN, paste the URL below.
 // e.g. 'https://res.cloudinary.com/dlvlxrvvd/video/upload/v1/your-video.mp4'
-const VIDEO_URL = 'https://ik.imagekit.io/2lax2ytm2/girl_is_running_slow_mothion_202605020127%20(1).mov/ik-video.mp4?updatedAt=1777664025764'
+const VIDEO_URL = 'https://res.cloudinary.com/dduyaqvk3/video/upload/v1777668901/girl_is_running_slow_mothion_202605020127_1_adx5zi.mov'
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function VideoHero() {
