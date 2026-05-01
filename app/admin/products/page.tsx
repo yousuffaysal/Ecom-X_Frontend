@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useCart } from '@/lib/CartContext'
 
 type Product = {
   id: string; slug: string; name: string; price: number
@@ -14,9 +15,10 @@ type Product = {
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading]   = useState(true)
+  const { showToast }           = useCart()
 
   const load = () => {
-    fetch('/api/products').then(r => r.json()).then(d => {
+    fetch(`/api/products?t=${Date.now()}`).then(r => r.json()).then(d => {
       setProducts(d.products || [])
       setLoading(false)
     })
@@ -28,8 +30,13 @@ export default function AdminProducts() {
 
   async function handleDelete(id: string, name: string) {
     if (!confirm(`Delete "${name}"? This cannot be undone.`)) return
-    await fetch(`/api/products/${id}`, { method: 'DELETE' })
-    load()
+    const res = await fetch(`/api/products/${id}`, { method: 'DELETE' })
+    if (res.ok) {
+      showToast(`"${name}" deleted successfully`)
+      load()
+    } else {
+      alert('Failed to delete product')
+    }
   }
 
   async function handleSummarize(id: string, reviewCount: number) {

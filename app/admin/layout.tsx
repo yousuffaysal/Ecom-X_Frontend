@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { isStaffRole, ROLE_LABEL, ROLE_COLOR, type Permission, can } from '@/lib/permissions'
 import type { Role } from '@/lib/auth'
+import Toast from '@/components/Toast'
 
 type NavItem = {
   href: string
@@ -169,6 +170,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </span>
           </div>
         </div>
+        <Link
+          href="/"
+          style={{
+            display: 'flex', alignItems: 'center', gap: '0.625rem',
+            width: '100%', marginTop: '0.75rem', padding: '0.625rem 0.875rem',
+            background: 'rgba(255,255,255,0.06)', color: 'white',
+            borderRadius: 10, fontSize: '0.8rem', fontWeight: 600,
+            textDecoration: 'none', transition: 'background 0.15s'
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          View Store
+        </Link>
         <button
           onClick={logout}
           style={{
@@ -232,6 +250,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
         {children}
       </main>
+      <Toast />
 
       <style>{`
         .admin-sidebar-desktop { display: contents; }

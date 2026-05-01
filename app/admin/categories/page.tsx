@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, FormEvent } from 'react'
+import { useCart } from '@/lib/CartContext'
 
 type Category = { id: string; name: string; slug: string; description: string; image_url: string; product_count: number }
 
@@ -9,8 +10,10 @@ export default function AdminCategories() {
   const [editing, setEditing] = useState<Category | null>(null)
   const [form, setForm]       = useState({ name: '', slug: '', description: '', image_url: '' })
   const [saving, setSaving]   = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const { showToast } = useCart()
 
-  const load = () => fetch('/api/categories').then(r => r.json()).then(d => setCats(d.categories || []))
+  const load = () => fetch(`/api/categories?t=${Date.now()}`).then(r => r.json()).then(d => setCats(d.categories || []))
   useEffect(() => { load() }, [])
 
   function openEdit(c: Category) {
@@ -39,8 +42,38 @@ export default function AdminCategories() {
 
   async function handleDelete(id: string, name: string) {
     if (!confirm(`Delete "${name}"?`)) return
-    await fetch(`/api/categories/${id}`, { method: 'DELETE' })
-    load()
+    const res = await fetch(`/api/categories/${id}`, { method: 'DELETE' })
+    if (res.ok) {
+      showToast(`"${name}" deleted successfully`)
+      load()
+    } else {
+      alert('Failed to delete category')
+    }
+  }
+
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    
+    setUploading(true)
+    const formData = new FormData()
+    formData.append('file', file)
+    
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+      const data = await res.json()
+      if (data.url) {
+        setForm(f => ({ ...f, image_url: data.url }))
+      }
+    } catch (err) {
+      console.error('Upload failed:', err)
+      alert('Upload failed')
+    } finally {
+      setUploading(false)
+    }
   }
 
   const inputStyle = {
@@ -81,7 +114,31 @@ export default function AdminCategories() {
             </div>
             <div>
               <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink)', marginBottom: '0.375rem' }}>Image URL</label>
-              <input style={inputStyle} value={form.image_url} onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))} />
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input style={inputStyle} value={form.image_url} onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))} placeholder="https://..." />
+                <div style={{ position: 'relative' }}>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleFileUpload} 
+                    style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%' }} 
+                    disabled={uploading}
+                  />
+                  <button 
+                    type="button" 
+                    className="btn-outline" 
+                    style={{ padding: '0.625rem 1rem', fontSize: '0.8rem', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                    disabled={uploading}
+                  >
+                    {uploading ? '...' : (
+                      <>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        Upload
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
             <div style={{ gridColumn: 'span 2', display: 'flex', gap: '0.75rem' }}>
               <button type="submit" disabled={saving} className="btn-primary" style={{ padding: '0.625rem 1.5rem', opacity: saving ? 0.7 : 1 }}>

@@ -11,6 +11,7 @@ type CartContextType = {
   cartOpen: boolean
   setCartOpen: React.Dispatch<React.SetStateAction<boolean>>
   toast: ToastState
+  showToast: (msg: string) => void
   addToCart: (product: CartItem & { qty?: number }) => void
   clearCart: () => void
   cartTotal: number
@@ -50,7 +51,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const cartTotal = cart.reduce((s, i) => s + i.price * i.qty, 0)
 
   return (
-    <CartContext.Provider value={{ cart, setCart, cartOpen, setCartOpen, toast, addToCart, clearCart, cartTotal }}>
+    <CartContext.Provider value={{ cart, setCart, cartOpen, setCartOpen, toast, showToast, addToCart, clearCart, cartTotal }}>
       {children}
     </CartContext.Provider>
   )
