@@ -365,6 +365,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .rsp-3col  { }
 .rsp-4col  { }
 .rsp-6col  { }
+.rsp-bento { }
+.rsp-bento-item { }
 .rsp-hero  { }
 .rsp-stack { }
 .rsp-px    { }
@@ -388,6 +390,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .rsp-4col { grid-template-columns: 1fr 1fr !important; gap: 16px !important; }
   .rsp-6col { grid-template-columns: repeat(3, 1fr) !important; gap: 6px !important; }
   .rsp-hero { grid-template-columns: 1fr !important; min-height: auto !important; }
+  .rsp-bento { grid-template-columns: 1fr 1fr !important; grid-auto-rows: 200px !important; }
+  .rsp-bento-item { grid-column: span 1 !important; grid-row: span 1 !important; }
 
   /* ── Flex stacking ── */
   .rsp-stack { flex-direction: column !important; gap: 24px !important; }

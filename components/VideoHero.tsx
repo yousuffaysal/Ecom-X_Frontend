@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 // ── Replace with your hosted video URL ────────────────────────────────────────
 // Upload to Cloudinary (account: dlvlxrvvd) or any CDN, paste the URL below.
 // e.g. 'https://res.cloudinary.com/dlvlxrvvd/video/upload/v1/your-video.mp4'
-const VIDEO_URL = 'https://ik.imagekit.io/2lax2ytm2/c7b461ffd61ef36eb4f4f18f7d055859_720w.mov'
+const VIDEO_URL = 'https://ik.imagekit.io/2lax2ytm2/girl_is_running_slow_mothion_202605020127%20(1).mov/ik-video.mp4?updatedAt=1777664025764'
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function VideoHero() {

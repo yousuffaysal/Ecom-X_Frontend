@@ -627,18 +627,18 @@ export default function HomePage() {
             </p>
           </div>
         </FadeIn>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 8 }} className="rsp-6col">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gridAutoRows: '260px', gap: 16 }} className="rsp-bento">
           {[
-            { img: '/images/ugc/ugc_jacket.png', size: 'Jacket · M' },
-            { img: '/images/ugc/ugc_knit_1.png', size: 'Knit · L' },
-            { img: '/images/ugc/ugc_shirt.png', size: 'Shirt · XL' },
-            { img: '/images/ugc/ugc_parka.png', size: 'Parka · S' },
-            { img: '/images/ugc/ugc_tee.png', size: 'Tee · M' },
-            { img: '/images/ugc/ugc_knit_2.png', size: 'Knit · XS' },
+            { img: '/images/ugc/ugc_jacket.png', size: 'Jacket · M', span: { gridColumn: 'span 2', gridRow: 'span 2' } },
+            { img: '/images/ugc/ugc_knit_1.png', size: 'Knit · L', span: { gridColumn: 'span 1', gridRow: 'span 1' } },
+            { img: '/images/ugc/ugc_shirt.png', size: 'Shirt · XL', span: { gridColumn: 'span 1', gridRow: 'span 2' } },
+            { img: '/images/ugc/ugc_parka.png', size: 'Parka · S', span: { gridColumn: 'span 1', gridRow: 'span 1' } },
+            { img: '/images/ugc/ugc_tee.png', size: 'Tee · M', span: { gridColumn: 'span 2', gridRow: 'span 1' } },
+            { img: '/images/ugc/ugc_knit_2.png', size: 'Knit · XS', span: { gridColumn: 'span 2', gridRow: 'span 1' } },
           ].map((item, i) => (
-            <FadeIn key={i} delay={0.1 + (i * 0.1)}>
+            <FadeIn key={i} delay={0.1 + (i * 0.1)} style={{ ...item.span, height: '100%' }} className="rsp-bento-item">
               <div
-                style={{ position: 'relative', aspectRatio: '1', borderRadius: 3, overflow: 'hidden', cursor: 'pointer', background: `url(${item.img}) center/cover` }}
+                style={{ position: 'relative', width: '100%', height: '100%', borderRadius: 12, overflow: 'hidden', cursor: 'pointer', background: `url(${item.img}) center/cover` }}
                 onMouseEnter={e => { const ov = e.currentTarget.querySelector('.ugc-ov') as HTMLElement; if (ov) ov.style.opacity = '1' }}
                 onMouseLeave={e => { const ov = e.currentTarget.querySelector('.ugc-ov') as HTMLElement; if (ov) ov.style.opacity = '0' }}
                 onClick={() => router.push('/shop')}
