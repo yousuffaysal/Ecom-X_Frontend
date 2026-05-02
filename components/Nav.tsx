@@ -11,6 +11,9 @@ export default function Nav() {
   const [userMenuOpen, setUserMenu]   = useState(false)
   const [mobileOpen, setMobileOpen]   = useState(false)
   const [notifOpen, setNotifOpen]     = useState(false)
+  const [searchOpen, setSearchOpen]   = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [suggestions, setSuggestions] = useState<any[]>([])
   const [notifications, setNotifications] = useState<any[]>([])
   const pathname = usePathname()
   const router   = useRouter()
@@ -19,6 +22,8 @@ export default function Nav() {
   const cartCount = cart.reduce((s, i) => s + i.qty, 0)
   const menuRef   = useRef<HTMLDivElement>(null)
   const notifRef  = useRef<HTMLDivElement>(null)
+  const searchRef = useRef<HTMLDivElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -34,13 +39,38 @@ export default function Nav() {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
         setNotifOpen(false)
       }
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchOpen(false)
+      }
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
   // Close mobile menu on route change
-  useEffect(() => { setMobileOpen(false); setNotifOpen(false) }, [pathname])
+  useEffect(() => { setMobileOpen(false); setNotifOpen(false); setSearchOpen(false) }, [pathname])
+
+  // Search suggestions logic
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSuggestions([])
+      return
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/products?search=${encodeURIComponent(searchQuery)}&limit=5`)
+        const d = await res.json()
+        setSuggestions(d.products || [])
+      } catch (err) {
+        console.error('Search suggestions error:', err)
+      }
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchQuery])
+
+  useEffect(() => {
+    if (searchOpen) setTimeout(() => searchInputRef.current?.focus(), 50)
+  }, [searchOpen])
 
   const fetchNotifications = async () => {
     try {
@@ -49,6 +79,15 @@ export default function Nav() {
       setNotifications(d.notifications || [])
     } catch (err) {
       console.error('Fetch notifications error:', err)
+    }
+  }
+
+  const clearNotifications = async () => {
+    try {
+      await fetch('/api/notifications', { method: 'DELETE' })
+      setNotifications([])
+    } catch (err) {
+      console.error('Clear notifications error:', err)
     }
   }
 
@@ -91,11 +130,89 @@ export default function Nav() {
 
         <div className="nav-actions">
           {/* Search */}
-          <button className="nav-icon-btn" aria-label="Search">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-            </svg>
-          </button>
+          <div ref={searchRef} style={{ position: 'relative' }}>
+            <button 
+              className="nav-icon-btn" 
+              aria-label="Search"
+              onClick={() => { setSearchOpen(!searchOpen); setUserMenu(false); setNotifOpen(false) }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+              </svg>
+            </button>
+
+            {searchOpen && (
+              <div style={{
+                position: 'absolute', right: 0, top: 'calc(100% + 0.5rem)',
+                background: 'white', borderRadius: 16, boxShadow: '0 12px 48px rgba(0,0,0,0.15)',
+                minWidth: 320, zIndex: 600, overflow: 'hidden',
+                border: '1px solid var(--border)',
+              }}>
+                <div style={{ padding: '0.75rem', borderBottom: '1px solid var(--border)' }}>
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && searchQuery.trim()) {
+                        router.push(`/shop?search=${encodeURIComponent(searchQuery)}`)
+                        setSearchOpen(false)
+                      }
+                    }}
+                    style={{
+                      width: '100%', padding: '0.625rem 1rem', borderRadius: 10,
+                      border: 'none', background: 'var(--offwhite)',
+                      fontSize: '0.875rem', fontFamily: 'var(--font-dm-sans)',
+                      outline: 'none', color: 'var(--ink)'
+                    }}
+                  />
+                </div>
+                <div style={{ maxHeight: 320, overflowY: 'auto' }}>
+                  {searchQuery && suggestions.length === 0 ? (
+                    <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--ink-soft)', fontSize: '0.82rem' }}>
+                      No products found
+                    </div>
+                  ) : (
+                    suggestions.map((p) => (
+                      <div
+                        key={p.id}
+                        onClick={() => { router.push(`/product/${p.slug}`); setSearchOpen(false) }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: '0.75rem',
+                          padding: '0.75rem 1rem', cursor: 'pointer', transition: 'background 0.15s'
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--offwhite)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                      >
+                        <div style={{ width: 40, height: 50, borderRadius: 4, overflow: 'hidden', flexShrink: 0, background: 'var(--offwhite)' }}>
+                          {p.images?.[0] && <img src={p.images[0].url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--red)', fontWeight: 600 }}>${p.price}</div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                  {searchQuery && suggestions.length > 0 && (
+                    <button
+                      onClick={() => { router.push(`/shop?search=${encodeURIComponent(searchQuery)}`); setSearchOpen(false) }}
+                      style={{
+                        width: '100%', padding: '0.875rem', textAlign: 'center',
+                        fontSize: '0.75rem', fontWeight: 700, color: 'var(--ink)',
+                        background: 'var(--offwhite)', border: 'none', cursor: 'pointer',
+                        borderTop: '1px solid var(--border)', textTransform: 'uppercase', letterSpacing: '0.05em'
+                      }}
+                    >
+                      View all results →
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* User / Account */}
           <div ref={menuRef} style={{ position: 'relative' }}>
@@ -162,9 +279,9 @@ export default function Nav() {
           </div>
 
           {/* Notifications — Desktop only */}
-          <div ref={notifRef} style={{ position: 'relative' }}>
+          <div ref={notifRef} className="rsp-hide-mobile" style={{ position: 'relative' }}>
             <button 
-              className="nav-icon-btn rsp-hide-mobile" 
+              className="nav-icon-btn" 
               aria-label="Notifications"
               onClick={async () => {
                 if (notifOpen) {
@@ -190,17 +307,36 @@ export default function Nav() {
             {notifOpen && (
               <div style={{
                 position: 'absolute', right: 0, top: 'calc(100% + 0.5rem)',
-                background: 'white', borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-                minWidth: 280, zIndex: 600, overflow: 'hidden',
+                background: 'white', borderRadius: 20, boxShadow: '0 12px 48px rgba(0,0,0,0.12)',
+                minWidth: 320, zIndex: 600, overflow: 'hidden',
                 border: '1px solid var(--border)',
               }}>
-                <div style={{ padding: '0.875rem 1rem', borderBottom: '1px solid var(--border)', background: 'var(--offwhite)' }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--ink)' }}>Recent Notifications</div>
+                <div style={{ 
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border)', 
+                  background: 'var(--white)' 
+                }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--ink)', letterSpacing: '-0.01em' }}>Notifications</div>
+                  {notifications.length > 0 && (
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); clearNotifications() }}
+                      style={{ 
+                        fontSize: '0.72rem', fontWeight: 700, color: 'var(--red)', 
+                        background: 'none', border: 'none', cursor: 'pointer',
+                        padding: '4px 8px', borderRadius: 6, transition: 'background 0.15s'
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'oklch(0.96 0.01 20)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                    >
+                      Clear All
+                    </button>
+                  )}
                 </div>
-                <div style={{ maxHeight: 320, overflowY: 'auto' }}>
+                <div style={{ maxHeight: 380, overflowY: 'auto', background: 'white' }}>
                   {notifications.length === 0 ? (
-                    <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--ink-soft)', fontSize: '0.82rem' }}>
-                      No recent notifications
+                    <div style={{ padding: '3.5rem 2rem', textAlign: 'center' }}>
+                      <div style={{ fontSize: '1.5rem', marginBottom: '1rem', opacity: 0.3 }}>🔔</div>
+                      <div style={{ color: 'var(--ink-soft)', fontSize: '0.82rem', fontWeight: 500 }}>All caught up!</div>
                     </div>
                   ) : (
                     notifications.map((n, i) => (
@@ -208,16 +344,28 @@ export default function Nav() {
                         key={n.id} 
                         onClick={() => { if (n.url) router.push(n.url); setNotifOpen(false) }}
                         style={{ 
-                          padding: '0.875rem 1rem', borderBottom: i < notifications.length - 1 ? '1px solid var(--border)' : 'none',
-                          cursor: n.url ? 'pointer' : 'default', transition: 'background 0.15s'
+                          padding: '1.25rem 1.5rem', borderBottom: i < notifications.length - 1 ? '1px solid #f8f6f2' : 'none',
+                          cursor: n.url ? 'pointer' : 'default', transition: 'background 0.2s',
+                          position: 'relative'
                         }}
-                        onMouseEnter={e => n.url && (e.currentTarget.style.background = 'var(--offwhite)')}
-                        onMouseLeave={e => n.url && (e.currentTarget.style.background = 'none')}
+                        onMouseEnter={e => n.url && (e.currentTarget.style.background = '#faf9f7')}
+                        onMouseLeave={e => n.url && (e.currentTarget.style.background = 'white')}
                       >
-                        <div style={{ fontWeight: 700, fontSize: '0.8rem', color: 'var(--ink)', marginBottom: '0.2rem' }}>{n.title}</div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--ink-mid)', lineHeight: 1.4 }}>{n.body}</div>
-                        <div style={{ fontSize: '0.65rem', color: 'var(--ink-soft)', marginTop: '0.4rem' }}>
-                          {new Date(n.created_at).toLocaleDateString()}
+                        {!n.read && (
+                          <div style={{ position: 'absolute', left: 10, top: '1.65rem', width: 6, height: 6, borderRadius: '50%', background: 'var(--red)' }} />
+                        )}
+                        <div style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--ink)', marginBottom: '0.35rem', lineHeight: 1.3 }}>{n.title}</div>
+                        <div style={{ fontSize: '0.78rem', color: 'var(--ink-mid)', lineHeight: 1.6, marginBottom: '0.625rem' }}>{n.body}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <div style={{ fontSize: '0.68rem', fontWeight: 600, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                            {new Date(n.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </div>
+                          {n.url && (
+                            <>
+                              <div style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--border)' }} />
+                              <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--red)' }}>View details →</div>
+                            </>
+                          )}
                         </div>
                       </div>
                     ))

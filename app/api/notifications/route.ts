@@ -20,3 +20,14 @@ export async function GET(req: NextRequest) {
   const result = await query(sql, userId ? [userId] : [])
   return NextResponse.json({ notifications: result.rows })
 }
+
+export async function DELETE(req: NextRequest) {
+  const session = await getSession()
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  
+  // We only delete notifications specifically for this user
+  // Broadcast notifications (null user_id) remain for others
+  await query('DELETE FROM notifications WHERE user_id = $1', [session.userId])
+  
+  return NextResponse.json({ success: true })
+}
