@@ -180,7 +180,7 @@ export default function AdminDashboard() {
                 { href: '/admin/orders',       label: 'Manage Orders',     icon: '◎', color: '#1d4ed8', bg: '#eff6ff', permission: 'viewOrders'        as Permission },
                 { href: '/admin/users',        label: 'Manage Users',      icon: '⊕', color: '#7c3aed', bg: '#f5f3ff', permission: 'manageUsers'       as Permission },
                 { href: '/admin/categories',   label: 'Edit Categories',   icon: '≡', color: '#b45309', bg: '#fffbeb', permission: 'manageCategories'  as Permission },
-              ] as const).filter(a => can(user.role as Role, a.permission)).map(a => (
+              ] as const).filter(a => user && can(user.role as Role, a.permission)).map(a => (
                 <Link
                   key={a.href}
                   href={a.href}
