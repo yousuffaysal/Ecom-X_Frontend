@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useCart } from '@/lib/CartContext'
 import { useAuth } from '@/lib/AuthContext'
+import { subscribeToPush } from '@/lib/push'
 
 export default function Nav() {
   const [scrolled, setScrolled]       = useState(false)
@@ -127,6 +128,34 @@ export default function Nav() {
                     {item.label}
                   </button>
                 ))}
+                <div style={{ borderTop: '1px solid var(--border)' }}>
+                  <button
+                    onClick={async () => {
+                      try {
+                        const res = await Notification.requestPermission()
+                        if (res === 'granted') {
+                          await subscribeToPush()
+                          alert('Notifications enabled!')
+                        } else {
+                          alert('Permission denied. Please check browser settings.')
+                        }
+                      } catch (err) {
+                        alert('Error enabling notifications.')
+                      }
+                      setUserMenu(false)
+                    }}
+                    style={{
+                      display: 'block', width: '100%', textAlign: 'left',
+                      padding: '0.7rem 1rem', fontSize: '0.875rem', color: 'var(--ink)',
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      fontFamily: 'var(--font-dm-sans)',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--offwhite)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                  >
+                    Enable Notifications
+                  </button>
+                </div>
                 <div style={{ borderTop: '1px solid var(--border)' }}>
                   <button
                     onClick={() => { logout(); setUserMenu(false) }}

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { query } from '@/lib/db'
 import { getSession } from '@/lib/session'
 import { isStaffRole } from '@/lib/permissions'
+import { notifyAdmins } from '@/lib/web-push'
 
 export async function GET(req: NextRequest) {
   const session = await getSession()
@@ -73,6 +74,13 @@ export async function POST(req: NextRequest) {
   }
 
   await query('DELETE FROM cart_items WHERE user_id=$1', [session.userId])
+
+  // Notify admins about the new order
+  notifyAdmins({
+    title: 'New Order Placed!',
+    body: `Order #${orderId} for $${total} just came in from ${shipping_name}.`,
+    url: `/admin/orders`
+  }).catch(err => console.error('Admin notification error:', err))
 
   return NextResponse.json({ id: orderId }, { status: 201 })
 }

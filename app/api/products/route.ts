@@ -3,6 +3,7 @@ import { query } from '@/lib/db'
 import { getSession } from '@/lib/session'
 import { cache } from '@/lib/cache'
 import { can } from '@/lib/permissions'
+import { broadcastToUsers } from '@/lib/web-push'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
@@ -107,6 +108,13 @@ export async function POST(req: NextRequest) {
 
   // Invalidate Aria's product catalog cache so she sees the new product immediately
   cache.del('style-advisor:catalog')
+
+  // Notify users about the new product
+  broadcastToUsers({
+    title: 'New Product Available!',
+    body: `${name} has just been added to the collection.`,
+    url: `/product/${slug}`
+  }).catch(err => console.error('Broadcast error:', err))
 
   return NextResponse.json({ id: result.rows[0].id }, { status: 201 })
 }

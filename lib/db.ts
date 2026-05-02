@@ -60,6 +60,17 @@ export async function ensureIndexes() {
     // Contact messages
     'CREATE INDEX IF NOT EXISTS idx_contact_messages_read       ON contact_messages(read)',
     'CREATE INDEX IF NOT EXISTS idx_contact_messages_created_at ON contact_messages(created_at DESC)',
+
+    // Push Subscriptions
+    `CREATE TABLE IF NOT EXISTS push_subscriptions (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+      endpoint TEXT UNIQUE NOT NULL,
+      p256dh TEXT NOT NULL,
+      auth TEXT NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`,
+    'CREATE INDEX IF NOT EXISTS idx_push_subs_user_id ON push_subscriptions(user_id)',
   ]
 
   // Run all index creations in parallel — each is a DDL no-op if the index exists
