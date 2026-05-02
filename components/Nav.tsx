@@ -130,34 +130,6 @@ export default function Nav() {
                 ))}
                 <div style={{ borderTop: '1px solid var(--border)' }}>
                   <button
-                    onClick={async () => {
-                      try {
-                        const res = await Notification.requestPermission()
-                        if (res === 'granted') {
-                          await subscribeToPush()
-                          alert('Notifications enabled!')
-                        } else {
-                          alert('Permission denied. Please check browser settings.')
-                        }
-                      } catch (err) {
-                        alert('Error enabling notifications.')
-                      }
-                      setUserMenu(false)
-                    }}
-                    style={{
-                      display: 'block', width: '100%', textAlign: 'left',
-                      padding: '0.7rem 1rem', fontSize: '0.875rem', color: 'var(--ink)',
-                      background: 'none', border: 'none', cursor: 'pointer',
-                      fontFamily: 'var(--font-dm-sans)',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--offwhite)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                  >
-                    Enable Notifications
-                  </button>
-                </div>
-                <div style={{ borderTop: '1px solid var(--border)' }}>
-                  <button
                     onClick={() => { logout(); setUserMenu(false) }}
                     style={{
                       display: 'block', width: '100%', textAlign: 'left',
@@ -172,6 +144,27 @@ export default function Nav() {
               </div>
             )}
           </div>
+
+          {/* Notifications — Desktop only */}
+          <button 
+            className="nav-icon-btn rsp-hide-mobile" 
+            aria-label="Notifications"
+            onClick={async () => {
+              try {
+                const res = await Notification.requestPermission()
+                if (res === 'granted') {
+                  await subscribeToPush()
+                  alert('Notifications enabled!')
+                }
+              } catch (err) {
+                console.error(err)
+              }
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+          </button>
 
           {/* Cart */}
           <button className="nav-icon-btn" aria-label="Cart" onClick={() => setCartOpen(true)}>

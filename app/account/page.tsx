@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, FormEvent } from 'react'
 import Link from 'next/link'
+import { subscribeToPush } from '@/lib/push'
 
 type Profile = {
   name: string; email: string; role: string
@@ -20,6 +21,13 @@ export default function AccountPage() {
   const [saved, setSaved]       = useState(false)
   const [saveError, setSaveError] = useState('')
   const [editOpen, setEditOpen] = useState(false)
+  const [notifStatus, setNotifStatus] = useState<string>('default')
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      setNotifStatus(Notification.permission)
+    }
+  }, [])
 
   useEffect(() => {
     if (!loading && !user) router.replace('/auth/login?redirect=/account')
@@ -104,6 +112,48 @@ export default function AccountPage() {
               <div style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>{card.desc}</div>
             </Link>
           ))}
+        </div>
+
+        {/* Notifications Setting */}
+        <div style={{ background: 'white', borderRadius: 16, padding: '1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ fontSize: '1.5rem' }}>🔔</div>
+              <div>
+                <h2 style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--ink)' }}>Push Notifications</h2>
+                <p style={{ fontSize: '0.78rem', color: 'var(--muted)', marginTop: '0.2rem' }}>
+                  {notifStatus === 'granted' ? 'You are receiving real-time updates.' : 'Get alerts for new products and order updates.'}
+                </p>
+              </div>
+            </div>
+            <button
+              disabled={notifStatus === 'granted'}
+              onClick={async () => {
+                try {
+                  const res = await Notification.requestPermission()
+                  setNotifStatus(res)
+                  if (res === 'granted') {
+                    await subscribeToPush()
+                    alert('Notifications enabled!')
+                  } else {
+                    alert('Please enable notifications in your browser settings.')
+                  }
+                } catch (err) {
+                  console.error(err)
+                }
+              }}
+              style={{
+                padding: '0.5rem 1rem', borderRadius: 10, border: '1.5px solid var(--border)',
+                background: notifStatus === 'granted' ? '#f0fdf4' : 'white', 
+                color: notifStatus === 'granted' ? '#15803d' : 'var(--ink)', 
+                fontSize: '0.82rem', fontWeight: 600,
+                cursor: notifStatus === 'granted' ? 'default' : 'pointer', 
+                fontFamily: 'var(--font-dm-sans)'
+              }}
+            >
+              {notifStatus === 'granted' ? 'Enabled ✓' : 'Enable'}
+            </button>
+          </div>
         </div>
 
         {/* Profile details / edit */}

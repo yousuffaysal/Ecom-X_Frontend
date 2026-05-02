@@ -29,7 +29,10 @@ export async function subscribeToPush() {
   if (existingSubscription) return existingSubscription;
 
   const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-  if (!publicKey) throw new Error('VAPID public key not found');
+  if (!publicKey) {
+    console.error('Push Error: NEXT_PUBLIC_VAPID_PUBLIC_KEY is not defined in environment variables.');
+    throw new Error('VAPID public key not found');
+  }
 
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
