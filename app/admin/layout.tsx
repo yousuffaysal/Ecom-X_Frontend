@@ -33,6 +33,11 @@ const NAV: NavItem[] = [
       <path d="M4 6h16M4 12h8m-8 6h16"/>
     </svg>
   )},
+  { href: '/admin/marketing',  label: 'Marketing',  permission: 'manageMarketing',  icon: (a) => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={a ? 2.2 : 1.8}>
+      <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+    </svg>
+  )},
   { href: '/admin/orders',     label: 'Orders',     permission: 'viewOrders',       icon: (a) => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={a ? 2.2 : 1.8}>
       <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>

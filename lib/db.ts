@@ -91,6 +91,21 @@ export async function ensureIndexes() {
       notification_id UUID REFERENCES notifications(id) ON DELETE CASCADE,
       PRIMARY KEY (user_id, notification_id)
     )`,
+
+    // Marketing Banners
+    `CREATE TABLE IF NOT EXISTS marketing_banners (
+      id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      slot        INTEGER NOT NULL CHECK (slot IN (1, 2, 3)),
+      title       VARCHAR(255),
+      subtitle    TEXT,
+      link_url    VARCHAR(500) DEFAULT '/shop',
+      image_url   TEXT,
+      is_active   BOOLEAN DEFAULT true,
+      created_by  UUID REFERENCES users(id) ON DELETE SET NULL,
+      created_at  TIMESTAMPTZ DEFAULT NOW(),
+      updated_at  TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE (slot)
+    )`,
   ]
 
   // Run all index creations in parallel — each is a DDL no-op if the index exists

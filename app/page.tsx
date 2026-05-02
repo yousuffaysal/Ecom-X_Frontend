@@ -29,6 +29,7 @@ function FadeIn({ children, delay = 0, y = 30, className = '', style = {} }: { c
 }
 
 type ApiCategory = { id: string; name: string; slug: string; description: string; image_url: string }
+type MarketingBanner = { id: string; slot: 1 | 2 | 3; title: string; subtitle: string; link_url: string; image_url: string }
 
 export default function HomePage() {
   const router = useRouter()
@@ -37,10 +38,16 @@ export default function HomePage() {
   const [activeTestimonial, setActiveTestimonial] = useState(0)
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
+  const [marketingBanners, setMarketingBanners] = useState<Record<number, MarketingBanner>>({})
 
   useEffect(() => {
     fetch('/api/products?featured=true&limit=4').then(r => r.json()).then(d => setFeatured(d.products || []))
     fetch('/api/categories').then(r => r.json()).then(d => setCategories(d.categories || []))
+    fetch('/api/marketing').then(r => r.json()).then(d => {
+      const map: Record<number, MarketingBanner> = {}
+      for (const b of d.banners || []) map[b.slot] = b
+      setMarketingBanners(map)
+    })
   }, [])
 
   useEffect(() => {
@@ -447,7 +454,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* EDITORIAL LOOKBOOK */}
+      {/* EDITORIAL LOOKBOOK / MARKETING */}
       <section style={{ padding: '80px 48px', borderTop: '1.5px solid var(--border)', borderBottom: '1.5px solid var(--border)' }} className="rsp-px">
         <FadeIn delay={0.1}>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 40 }}>
@@ -455,55 +462,86 @@ export default function HomePage() {
               <div className="section-eyebrow">The Lookbook</div>
               <div className="section-title">SS26 — Wear What Endures</div>
             </div>
-            <button className="btn-ghost" onClick={() => router.push('/shop')}>Shop the Look →</button>
+            <button className="btn-ghost" onClick={() => router.push(marketingBanners[1]?.link_url || '/shop')}>Shop the Look →</button>
           </div>
         </FadeIn>
         <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16 }} className="rsp-1col">
-          {/* Large hero image */}
-          <FadeIn delay={0.1}>
-            <div
-              style={{ position: 'relative', borderRadius: 4, overflow: 'hidden', height: 540, cursor: 'pointer', ...imgPlaceholder(27, 0.05) }}
-              onClick={() => router.push('/shop')}
-              onMouseEnter={e => { const img = e.currentTarget.querySelector('.look-overlay') as HTMLElement; if (img) img.style.opacity = '1' }}
-              onMouseLeave={e => { const img = e.currentTarget.querySelector('.look-overlay') as HTMLElement; if (img) img.style.opacity = '0' }}
-            >
-              <div className="look-overlay" style={{ position: 'absolute', inset: 0, background: 'oklch(0.08 0.01 30 / 0.55)', opacity: 0, transition: 'opacity 0.3s', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ border: '1.5px solid white', color: 'white', padding: '10px 24px', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                  Shop Now
-                </div>
-              </div>
-              <div style={{ position: 'absolute', bottom: 28, left: 28, zIndex: 2 }}>
-                <div style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', marginBottom: 6 }}>
-                  Featured Style
-                </div>
-                <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: '1.4rem', fontWeight: 700, color: 'white', letterSpacing: '-0.01em' }}>
-                  The Ember Field Jacket
-                </div>
-                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.65)', marginTop: 4 }}>$298 — Available in 3 colours</div>
-              </div>
-            </div>
-          </FadeIn>
-          {/* Right column — 2 stacked */}
-          <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 16 }}>
-            {[
-              { label: 'The Ridge Knit', sub: '$188 — Heritage texture', hue: 220, sat: 0.03 },
-              { label: 'Mesa Overshirt', sub: '$148 — The shirt that does everything', hue: 150, sat: 0.02 },
-            ].map((item, i) => (
-              <FadeIn key={item.label} delay={0.2 + (i * 0.1)} style={{ height: '100%' }}>
+          {/* Slot 1 — Large hero */}
+          {(() => {
+            const b = marketingBanners[1]
+            return (
+              <FadeIn delay={0.1}>
                 <div
-                  style={{ position: 'relative', borderRadius: 4, overflow: 'hidden', height: '100%', cursor: 'pointer', ...imgPlaceholder(item.hue, item.sat) }}
-                  onClick={() => router.push('/shop')}
-                  onMouseEnter={e => { const ov = e.currentTarget.querySelector('.look-overlay') as HTMLElement; if (ov) ov.style.opacity = '1' }}
-                  onMouseLeave={e => { const ov = e.currentTarget.querySelector('.look-overlay') as HTMLElement; if (ov) ov.style.opacity = '0' }}
+                  style={{
+                    position: 'relative', borderRadius: 4, overflow: 'hidden', height: 540, cursor: 'pointer',
+                    ...(b?.image_url
+                      ? { backgroundImage: `url(${b.image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                      : imgPlaceholder(27, 0.05)),
+                  }}
+                  onClick={() => router.push(b?.link_url || '/shop')}
+                  onMouseEnter={e => { const el = e.currentTarget.querySelector('.look-overlay') as HTMLElement; if (el) el.style.opacity = '1' }}
+                  onMouseLeave={e => { const el = e.currentTarget.querySelector('.look-overlay') as HTMLElement; if (el) el.style.opacity = '0' }}
                 >
-                  <div className="look-overlay" style={{ position: 'absolute', inset: 0, background: 'oklch(0.08 0.01 30 / 0.55)', opacity: 0, transition: 'opacity 0.3s', zIndex: 1 }} />
-                  <div style={{ position: 'absolute', bottom: 20, left: 20, zIndex: 2 }}>
-                    <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: '1rem', fontWeight: 700, color: 'white' }}>{item.label}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.65)', marginTop: 2 }}>{item.sub}</div>
+                  <div className="look-overlay" style={{ position: 'absolute', inset: 0, background: 'oklch(0.08 0.01 30 / 0.55)', opacity: 0, transition: 'opacity 0.3s', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ border: '1.5px solid white', color: 'white', padding: '10px 24px', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                      Shop Now
+                    </div>
+                  </div>
+                  <div style={{ position: 'absolute', bottom: 28, left: 28, zIndex: 2 }}>
+                    {b?.title || b?.subtitle ? (
+                      <>
+                        <div style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', marginBottom: 6 }}>
+                          Featured Style
+                        </div>
+                        {b.title && <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: '1.4rem', fontWeight: 700, color: 'white', letterSpacing: '-0.01em' }}>{b.title}</div>}
+                        {b.subtitle && <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.65)', marginTop: 4 }}>{b.subtitle}</div>}
+                      </>
+                    ) : (
+                      <>
+                        <div style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', marginBottom: 6 }}>Featured Style</div>
+                        <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: '1.4rem', fontWeight: 700, color: 'white', letterSpacing: '-0.01em' }}>The Ember Field Jacket</div>
+                        <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.65)', marginTop: 4 }}>$298 — Available in 3 colours</div>
+                      </>
+                    )}
                   </div>
                 </div>
               </FadeIn>
-            ))}
+            )
+          })()}
+
+          {/* Right column — Slots 2 & 3 */}
+          <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 16 }}>
+            {([
+              { slot: 2, defaultLabel: 'The Ridge Knit', defaultSub: '$188 — Heritage texture', hue: 220, sat: 0.03 },
+              { slot: 3, defaultLabel: 'Mesa Overshirt', defaultSub: '$148 — The shirt that does everything', hue: 150, sat: 0.02 },
+            ] as const).map((item, i) => {
+              const b = marketingBanners[item.slot]
+              return (
+                <FadeIn key={item.slot} delay={0.2 + (i * 0.1)} style={{ height: '100%' }}>
+                  <div
+                    style={{
+                      position: 'relative', borderRadius: 4, overflow: 'hidden', height: '100%', cursor: 'pointer',
+                      ...(b?.image_url
+                        ? { backgroundImage: `url(${b.image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                        : imgPlaceholder(item.hue, item.sat)),
+                    }}
+                    onClick={() => router.push(b?.link_url || '/shop')}
+                    onMouseEnter={e => { const ov = e.currentTarget.querySelector('.look-overlay') as HTMLElement; if (ov) ov.style.opacity = '1' }}
+                    onMouseLeave={e => { const ov = e.currentTarget.querySelector('.look-overlay') as HTMLElement; if (ov) ov.style.opacity = '0' }}
+                  >
+                    <div className="look-overlay" style={{ position: 'absolute', inset: 0, background: 'oklch(0.08 0.01 30 / 0.55)', opacity: 0, transition: 'opacity 0.3s', zIndex: 1 }} />
+                    <div style={{ position: 'absolute', bottom: 20, left: 20, zIndex: 2 }}>
+                      <div style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontSize: '1rem', fontWeight: 700, color: 'white' }}>
+                        {b?.title || item.defaultLabel}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.65)', marginTop: 2 }}>
+                        {b?.subtitle || item.defaultSub}
+                      </div>
+                    </div>
+                  </div>
+                </FadeIn>
+              )
+            })}
           </div>
         </div>
       </section>
