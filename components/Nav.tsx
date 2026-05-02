@@ -95,6 +95,7 @@ export default function Nav() {
     { href: '/',                label: 'Home' },
     { href: '/shop',            label: 'Shop' },
     { href: '/style-advisor',   label: 'AI Stylist', ai: true },
+    { href: '/support',         label: 'Support',    ai: true },
     { href: '/about',           label: 'About' },
     { href: '/contact',         label: 'Contact' },
   ]
