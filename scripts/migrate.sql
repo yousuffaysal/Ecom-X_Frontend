@@ -153,6 +153,21 @@ CREATE TABLE IF NOT EXISTS newsletter_subscribers (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ─── MARKETING BANNERS ───────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS marketing_banners (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slot        INTEGER NOT NULL CHECK (slot IN (1, 2, 3)),
+  title       VARCHAR(255),
+  subtitle    TEXT,
+  link_url    VARCHAR(500) DEFAULT '/shop',
+  image_url   TEXT,
+  is_active   BOOLEAN DEFAULT true,
+  created_by  UUID REFERENCES users(id) ON DELETE SET NULL,
+  created_at  TIMESTAMPTZ DEFAULT NOW(),
+  updated_at  TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (slot)
+);
+
 -- ─── AUTO-UPDATE RATING TRIGGER ──────────────────────────────────────────────
 CREATE OR REPLACE FUNCTION update_product_rating()
 RETURNS TRIGGER AS $$

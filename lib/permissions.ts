@@ -14,6 +14,7 @@ const PERMISSIONS = {
   deleteMessages:    ['admin', 'moderator'],
   useAIChat:         ['admin'],
   viewCLV:           ['admin'],
+  manageMarketing:   ['admin', 'moderator'],
 } as const satisfies Record<string, readonly Role[]>
 
 export type Permission = keyof typeof PERMISSIONS

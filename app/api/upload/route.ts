@@ -4,7 +4,7 @@ import cloudinary from '@/lib/cloudinary'
 
 export async function POST(req: NextRequest) {
   const session = await getSession()
-  if (!session || session.role !== 'admin') {
+  if (!session || !['admin', 'moderator'].includes(session.role as string)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
