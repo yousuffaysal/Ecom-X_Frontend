@@ -194,12 +194,33 @@ export default function SupportPage() {
               {/* Info cards */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginTop: '2rem', textAlign: 'left' }}>
                 {[
-                  { icon: '↩', title: '30-Day Returns', desc: 'Unworn, tags attached' },
-                  { icon: '🛡', title: '2-Year Warranty', desc: 'No receipt needed' },
-                  { icon: '🚚', title: 'Free Shipping', desc: 'On orders over $150' },
+                  {
+                    icon: (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 14l-4-4 4-4"/><path d="M5 10h11a4 4 0 0 1 0 8h-1"/>
+                      </svg>
+                    ),
+                    title: '30-Day Returns', desc: 'Unworn, tags attached',
+                  },
+                  {
+                    icon: (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                      </svg>
+                    ),
+                    title: '2-Year Warranty', desc: 'No receipt needed',
+                  },
+                  {
+                    icon: (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+                      </svg>
+                    ),
+                    title: 'Free Shipping', desc: 'On orders over $150',
+                  },
                 ].map(c => (
                   <div key={c.title} style={{ padding: '1rem', background: 'white', borderRadius: 10, border: '1px solid #f0ede8', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
-                    <div style={{ fontSize: '1.1rem', marginBottom: 6 }}>{c.icon}</div>
+                    <div style={{ width: 32, height: 32, borderRadius: 8, background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>{c.icon}</div>
                     <div style={{ fontWeight: 700, fontSize: '0.8rem', color: '#1a1a18', marginBottom: 2 }}>{c.title}</div>
                     <div style={{ fontSize: '0.72rem', color: '#9ca3af' }}>{c.desc}</div>
                   </div>

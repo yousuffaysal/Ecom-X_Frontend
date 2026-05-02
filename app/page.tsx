@@ -481,7 +481,7 @@ export default function HomePage() {
                   onClick={() => router.push('/style-advisor')}
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                    padding: '0.9rem 2rem', borderRadius: 12, border: 'none',
+                    padding: '0.9rem 2rem', borderRadius: 4, border: 'none',
                     background: 'var(--red)', color: 'white',
                     fontSize: '0.9rem', fontWeight: 700, cursor: 'pointer',
                     fontFamily: 'var(--font-dm-sans)', letterSpacing: '0.01em',
