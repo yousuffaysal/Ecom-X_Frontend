@@ -1,50 +1,27 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion, Variants } from 'framer-motion'
+import { motion, Variants, useScroll, useTransform } from 'framer-motion'
 
 // ── Replace with your hosted video URL ────────────────────────────────────────
-// Upload to Cloudinary (account: dlvlxrvvd) or any CDN, paste the URL below.
-// e.g. 'https://res.cloudinary.com/dlvlxrvvd/video/upload/v1/your-video.mp4'
 const VIDEO_URL = 'https://res.cloudinary.com/dduyaqvk3/video/upload/v1777668901/girl_is_running_slow_mothion_202605020127_1_adx5zi.mov'
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function VideoHero() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const bgRef        = useRef<HTMLDivElement>(null)
-  const textRef      = useRef<HTMLDivElement>(null)
-  const scrollRef    = useRef<HTMLDivElement>(null)
   const router       = useRouter()
 
-  useEffect(() => {
-    const container  = containerRef.current
-    const bg         = bgRef.current
-    const text       = textRef.current
-    const scrollHint = scrollRef.current
-    if (!container || !bg || !text || !scrollHint) return
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  })
 
-    function update() {
-      const top      = container!.getBoundingClientRect().top
-      const scrolled = -top
-      const total    = container!.offsetHeight - window.innerHeight
-      const p        = Math.max(0, Math.min(1, scrolled / total))
-
-      // zoom: 1.35 → 1.0
-      bg!.style.transform = `scale(${1 + (1 - p) * 0.35})`
-
-      // text fades + rises
-      text!.style.opacity   = String(Math.max(0, 1 - p * 2.8))
-      text!.style.transform = `translateY(${p * -50}px)`
-
-      // scroll hint disappears quickly
-      scrollHint!.style.opacity = String(Math.max(0, 1 - p * 8))
-    }
-
-    window.addEventListener('scroll', update, { passive: true })
-    update()
-    return () => window.removeEventListener('scroll', update)
-  }, [])
+  // Scroll animations
+  const bgScale    = useTransform(scrollYProgress, [0, 1], [1.35, 1.0])
+  const textOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0])
+  const textY       = useTransform(scrollYProgress, [0, 0.4], [0, -40])
+  const hintOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0])
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -69,11 +46,11 @@ export default function VideoHero() {
   }
 
   return (
-    /* Narrow margin wrapper — gives the side + top/bottom spacing */
     <div style={{ padding: '2.5rem 1.5rem' }}>
       <style>{`
         .video-hero-sticky {
           height: calc(100vh - 2.5rem);
+          top: 1.25rem;
         }
         .video-hero-container {
           height: 160vh;
@@ -81,20 +58,19 @@ export default function VideoHero() {
         @media screen and (max-width: 768px) {
           .video-hero-sticky {
             height: 60vh !important;
-            min-height: 400px;
+            top: 20vh !important;
           }
           .video-hero-container {
-            height: 120vh !important;
+            height: 110vh !important;
           }
         }
       `}</style>
-      {/* Tall scroll container — shorter than before (160vh total) */}
+
       <div
         className="video-hero-container"
         ref={containerRef}
         style={{ position: 'relative' }}
       >
-        {/* Sticky rounded card */}
         <motion.div 
           initial="hidden"
           whileInView="visible"
@@ -103,23 +79,17 @@ export default function VideoHero() {
           className="video-hero-sticky" 
           style={{
             position: 'sticky',
-            top: '1.25rem',
             borderRadius: 24,
             overflow: 'hidden',
             background: '#080706',
             boxShadow: '0 24px 64px rgba(0,0,0,0.28), 0 4px 16px rgba(0,0,0,0.18)',
           }}
         >
-
-          {/* Zoomable background */}
           <motion.div
-            ref={bgRef}
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: 1, scale: 1.2 }}
-            transition={{ duration: 2.5, ease: [0.22, 1, 0.36, 1] }}
             style={{
               position: 'absolute', inset: 0,
               transformOrigin: 'center center',
+              scale: bgScale,
               willChange: 'transform',
             }}
           >
@@ -133,38 +103,25 @@ export default function VideoHero() {
             ) : (
               <div style={{
                 width: '100%', height: '100%',
-                background: `
-                  radial-gradient(ellipse 85% 65% at 22% 58%, rgba(185,28,28,0.24) 0%, transparent 62%),
-                  radial-gradient(ellipse 50% 80% at 80% 20%, rgba(130,100,70,0.12) 0%, transparent 62%),
-                  radial-gradient(ellipse 65% 45% at 58% 82%, rgba(70,50,35,0.18) 0%, transparent 58%),
-                  linear-gradient(150deg, #1e1712 0%, #100d0a 40%, #080706 100%)
-                `,
-              }}>
-                {/* Subtle grain */}
-                <div style={{
-                  position: 'absolute', inset: 0, opacity: 0.035,
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-                  backgroundSize: '180px 180px',
-                }} />
-              </div>
+                background: 'linear-gradient(150deg, #1e1712 0%, #100d0a 40%, #080706 100%)',
+              }} />
             )}
           </motion.div>
 
-          {/* Depth overlay */}
           <div style={{
             position: 'absolute', inset: 0, zIndex: 1,
             background: 'linear-gradient(to bottom, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.28) 55%, rgba(0,0,0,0.58) 100%)',
             borderRadius: 24,
           }} />
 
-          {/* Text content */}
-          <div
-            ref={textRef}
+          <motion.div
             style={{
               position: 'absolute', inset: 0, zIndex: 2,
               display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center',
               padding: '0 1.5rem', textAlign: 'center',
+              opacity: textOpacity,
+              y: textY,
               willChange: 'transform, opacity',
             }}
           >
@@ -192,8 +149,7 @@ export default function VideoHero() {
               color: 'rgba(255,255,255,0.38)', maxWidth: 460,
               lineHeight: 1.72, marginBottom: '2.5rem',
             }}>
-              Every piece in the SS26 collection is built to last a lifetime —<br />
-              designed with precision, sourced with integrity.
+              Every piece in the SS26 collection is built to last a lifetime — designed with precision, sourced with integrity.
             </motion.p>
 
             <motion.div variants={itemVariants} style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -227,11 +183,9 @@ export default function VideoHero() {
                 Ask Aria →
               </button>
             </motion.div>
-          </div>
+          </motion.div>
 
-          {/* Scroll hint */}
           <motion.div
-            ref={scrollRef}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.5, duration: 1 }}
@@ -240,6 +194,7 @@ export default function VideoHero() {
               transform: 'translateX(-50%)',
               zIndex: 2, display: 'flex', flexDirection: 'column',
               alignItems: 'center', gap: '0.5rem',
+              opacity: hintOpacity,
               willChange: 'opacity',
             }}
           >
@@ -252,7 +207,6 @@ export default function VideoHero() {
               animation: 'scrollPulse 2s ease infinite',
             }} />
           </motion.div>
-
         </motion.div>
       </div>
     </div>
