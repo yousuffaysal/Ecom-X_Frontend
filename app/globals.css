@@ -479,6 +479,14 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
   /* ── Checkout ── */
   .rsp-checkout-bar { padding: 0.875rem 1rem !important; }
+
+  /* ── Account ── */
+  .rsp-acc-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1.25rem !important;
+  }
+  .rsp-acc-row button { width: 100% !important; }
 }
 
 @media (max-width: 480px) {
