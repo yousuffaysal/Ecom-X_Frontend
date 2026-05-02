@@ -71,6 +71,19 @@ export async function ensureIndexes() {
       created_at TIMESTAMPTZ DEFAULT NOW()
     )`,
     'CREATE INDEX IF NOT EXISTS idx_push_subs_user_id ON push_subscriptions(user_id)',
+
+    // Notifications History
+    `CREATE TABLE IF NOT EXISTS notifications (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id UUID REFERENCES users(id) ON DELETE CASCADE, -- null for broadcast/everyone
+      title TEXT NOT NULL,
+      body TEXT NOT NULL,
+      url TEXT,
+      read BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`,
+    'CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id)',
+    'CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created_at DESC)',
   ]
 
   // Run all index creations in parallel — each is a DDL no-op if the index exists

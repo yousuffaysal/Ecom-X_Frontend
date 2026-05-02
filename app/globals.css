@@ -412,6 +412,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
   /* ── Visibility ── */
   .rsp-hide { display: none !important; }
+  .rsp-hide-mobile { display: none !important; }
 
   /* ── Typography scale-down ── */
   .section-title { font-size: 1.75rem !important; }

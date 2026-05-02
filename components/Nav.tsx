@@ -10,12 +10,15 @@ export default function Nav() {
   const [scrolled, setScrolled]       = useState(false)
   const [userMenuOpen, setUserMenu]   = useState(false)
   const [mobileOpen, setMobileOpen]   = useState(false)
+  const [notifOpen, setNotifOpen]     = useState(false)
+  const [notifications, setNotifications] = useState<any[]>([])
   const pathname = usePathname()
   const router   = useRouter()
   const { cart, setCartOpen } = useCart()
   const { user, logout }      = useAuth()
   const cartCount = cart.reduce((s, i) => s + i.qty, 0)
   const menuRef   = useRef<HTMLDivElement>(null)
+  const notifRef  = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -28,13 +31,26 @@ export default function Nav() {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setUserMenu(false)
       }
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setNotifOpen(false)
+      }
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
   // Close mobile menu on route change
-  useEffect(() => { setMobileOpen(false) }, [pathname])
+  useEffect(() => { setMobileOpen(false); setNotifOpen(false) }, [pathname])
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await fetch('/api/notifications')
+      const d = await res.json()
+      setNotifications(d.notifications || [])
+    } catch (err) {
+      console.error('Fetch notifications error:', err)
+    }
+  }
 
   const links = [
     { href: '/',                label: 'Home' },
@@ -146,25 +162,70 @@ export default function Nav() {
           </div>
 
           {/* Notifications — Desktop only */}
-          <button 
-            className="nav-icon-btn rsp-hide-mobile" 
-            aria-label="Notifications"
-            onClick={async () => {
-              try {
-                const res = await Notification.requestPermission()
-                if (res === 'granted') {
-                  await subscribeToPush()
-                  alert('Notifications enabled!')
+          <div ref={notifRef} style={{ position: 'relative' }}>
+            <button 
+              className="nav-icon-btn rsp-hide-mobile" 
+              aria-label="Notifications"
+              onClick={async () => {
+                if (notifOpen) {
+                  setNotifOpen(false)
+                  return
                 }
-              } catch (err) {
-                console.error(err)
-              }
-            }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-          </button>
+                
+                // Trigger permission if needed, but primarily toggle dropdown
+                if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+                  await Notification.requestPermission()
+                }
+                
+                fetchNotifications()
+                setNotifOpen(true)
+                setUserMenu(false)
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+            </button>
+
+            {notifOpen && (
+              <div style={{
+                position: 'absolute', right: 0, top: 'calc(100% + 0.5rem)',
+                background: 'white', borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+                minWidth: 280, zIndex: 600, overflow: 'hidden',
+                border: '1px solid var(--border)',
+              }}>
+                <div style={{ padding: '0.875rem 1rem', borderBottom: '1px solid var(--border)', background: 'var(--offwhite)' }}>
+                  <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--ink)' }}>Recent Notifications</div>
+                </div>
+                <div style={{ maxHeight: 320, overflowY: 'auto' }}>
+                  {notifications.length === 0 ? (
+                    <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--ink-soft)', fontSize: '0.82rem' }}>
+                      No recent notifications
+                    </div>
+                  ) : (
+                    notifications.map((n, i) => (
+                      <div 
+                        key={n.id} 
+                        onClick={() => { if (n.url) router.push(n.url); setNotifOpen(false) }}
+                        style={{ 
+                          padding: '0.875rem 1rem', borderBottom: i < notifications.length - 1 ? '1px solid var(--border)' : 'none',
+                          cursor: n.url ? 'pointer' : 'default', transition: 'background 0.15s'
+                        }}
+                        onMouseEnter={e => n.url && (e.currentTarget.style.background = 'var(--offwhite)')}
+                        onMouseLeave={e => n.url && (e.currentTarget.style.background = 'none')}
+                      >
+                        <div style={{ fontWeight: 700, fontSize: '0.8rem', color: 'var(--ink)', marginBottom: '0.2rem' }}>{n.title}</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--ink-mid)', lineHeight: 1.4 }}>{n.body}</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--ink-soft)', marginTop: '0.4rem' }}>
+                          {new Date(n.created_at).toLocaleDateString()}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Cart */}
           <button className="nav-icon-btn" aria-label="Cart" onClick={() => setCartOpen(true)}>

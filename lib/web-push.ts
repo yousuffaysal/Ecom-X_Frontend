@@ -38,11 +38,26 @@ async function sendNotification(subscription: any, payload: PushPayload) {
 }
 
 export async function broadcastToUsers(payload: PushPayload) {
+  // Save to history (user_id is NULL for broadcast)
+  await query(
+    'INSERT INTO notifications (title, body, url) VALUES ($1, $2, $3)',
+    [payload.title, payload.body, payload.url]
+  )
+  
   const result = await query('SELECT * FROM push_subscriptions');
   await Promise.all(result.rows.map(sub => sendNotification(sub, payload)));
 }
 
 export async function notifyAdmins(payload: PushPayload) {
+  // Save to history for each admin
+  const admins = await query("SELECT id FROM users WHERE role IN ('admin', 'moderator')")
+  for (const admin of admins.rows) {
+    await query(
+      'INSERT INTO notifications (user_id, title, body, url) VALUES ($1, $2, $3, $4)',
+      [admin.id, payload.title, payload.body, payload.url]
+    )
+  }
+
   const result = await query(`
     SELECT ps.* 
     FROM push_subscriptions ps
