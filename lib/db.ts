@@ -84,6 +84,13 @@ export async function ensureIndexes() {
     )`,
     'CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id)',
     'CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created_at DESC)',
+
+    // Notification Dismissals
+    `CREATE TABLE IF NOT EXISTS notification_dismissals (
+      user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+      notification_id UUID REFERENCES notifications(id) ON DELETE CASCADE,
+      PRIMARY KEY (user_id, notification_id)
+    )`,
   ]
 
   // Run all index creations in parallel — each is a DDL no-op if the index exists

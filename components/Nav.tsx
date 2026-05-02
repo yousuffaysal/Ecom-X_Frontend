@@ -330,7 +330,11 @@ export default function Nav() {
                 <div style={{ maxHeight: 380, overflowY: 'auto', background: 'white' }}>
                   {notifications.length === 0 ? (
                     <div style={{ padding: '3.5rem 2rem', textAlign: 'center' }}>
-                      <div style={{ fontSize: '1.5rem', marginBottom: '1rem', opacity: 0.3 }}>🔔</div>
+                      <div style={{ marginBottom: '1.25rem', opacity: 0.2 }}>
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="1.5" style={{ margin: '0 auto' }}>
+                          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                      </div>
                       <div style={{ color: 'var(--ink-soft)', fontSize: '0.82rem', fontWeight: 500 }}>All caught up!</div>
                     </div>
                   ) : (

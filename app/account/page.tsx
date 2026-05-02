@@ -97,9 +97,9 @@ export default function AccountPage() {
         {/* Quick links */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
           {[
-            { href: '/account/orders',   icon: '◎', label: 'My Orders',   desc: 'Track purchases' },
-            { href: '/account/wishlist', icon: '♡', label: 'Wishlist',     desc: 'Saved items' },
-            { href: '/shop',             icon: '◈', label: 'Shop',         desc: 'Browse products' },
+            { href: '/account/orders',   label: 'My Orders',   desc: 'Track purchases', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--red)" strokeWidth="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> },
+            { href: '/account/wishlist', label: 'Wishlist',     desc: 'Saved items',    icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--red)" strokeWidth="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> },
+            { href: '/shop',             label: 'Shop',         desc: 'Browse products', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--red)" strokeWidth="1.8"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"/><path d="M3 9V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4"/><path d="M12 12v4"/><path d="M9 14h6"/></svg> },
           ].map(card => (
             <Link
               key={card.href} href={card.href}
@@ -118,7 +118,9 @@ export default function AccountPage() {
         <div style={{ background: 'white', borderRadius: 16, padding: '1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', marginBottom: '1.25rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ fontSize: '1.5rem' }}>🔔</div>
+              <div style={{ background: 'var(--offwhite)', width: 44, height: 44, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </div>
               <div>
                 <h2 style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--ink)' }}>Push Notifications</h2>
                 <p style={{ fontSize: '0.78rem', color: 'var(--muted)', marginTop: '0.2rem' }}>

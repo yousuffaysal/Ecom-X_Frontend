@@ -10,9 +10,10 @@ export async function GET(req: NextRequest) {
   const userId = session?.userId
   
   const sql = userId 
-    ? `SELECT * FROM notifications 
-       WHERE user_id = $1 OR user_id IS NULL 
-       ORDER BY created_at DESC LIMIT 5`
+    ? `SELECT n.* FROM notifications n
+       LEFT JOIN notification_dismissals nd ON nd.notification_id = n.id AND nd.user_id = $1
+       WHERE (n.user_id = $1 OR n.user_id IS NULL) AND nd.notification_id IS NULL
+       ORDER BY n.created_at DESC LIMIT 5`
     : `SELECT * FROM notifications 
        WHERE user_id IS NULL 
        ORDER BY created_at DESC LIMIT 5`
@@ -24,10 +25,15 @@ export async function GET(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  
-  // We only delete notifications specifically for this user
-  // Broadcast notifications (null user_id) remain for others
-  await query('DELETE FROM notifications WHERE user_id = $1', [session.userId])
+  const userId = session.userId
+
+  // Record dismissals for all notifications currently visible to this user
+  await query(`
+    INSERT INTO notification_dismissals (user_id, notification_id)
+    SELECT $1, id FROM notifications 
+    WHERE (user_id = $1 OR user_id IS NULL)
+    ON CONFLICT DO NOTHING
+  `, [userId])
   
   return NextResponse.json({ success: true })
 }
