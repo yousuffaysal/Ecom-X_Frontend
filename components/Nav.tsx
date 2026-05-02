@@ -142,12 +142,7 @@ export default function Nav() {
             </button>
 
             {searchOpen && (
-              <div style={{
-                position: 'absolute', right: 0, top: 'calc(100% + 0.5rem)',
-                background: 'white', borderRadius: 16, boxShadow: '0 12px 48px rgba(0,0,0,0.15)',
-                minWidth: 320, zIndex: 600, overflow: 'hidden',
-                border: '1px solid var(--border)',
-              }}>
+              <div className="search-dropdown">
                 <div style={{ padding: '0.75rem', borderBottom: '1px solid var(--border)' }}>
                   <input
                     ref={searchInputRef}
