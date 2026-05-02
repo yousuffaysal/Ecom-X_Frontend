@@ -1,11 +1,17 @@
 'use client'
 
 import { useEffect, useState, FormEvent } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/lib/AuthContext'
+import { can } from '@/lib/permissions'
+import type { Role } from '@/lib/auth'
 import { useCart } from '@/lib/CartContext'
 
 type Category = { id: string; name: string; slug: string; description: string; image_url: string; product_count: number }
 
 export default function AdminCategories() {
+  const { user, loading } = useAuth()
+  const router = useRouter()
   const [cats, setCats]       = useState<Category[]>([])
   const [editing, setEditing] = useState<Category | null>(null)
   const [form, setForm]       = useState({ name: '', slug: '', description: '', image_url: '' })
@@ -13,8 +19,14 @@ export default function AdminCategories() {
   const [uploading, setUploading] = useState(false)
   const { showToast } = useCart()
 
+  useEffect(() => {
+    if (!loading && user && !can(user.role as Role, 'manageCategories')) {
+      router.replace('/admin')
+    }
+  }, [user, loading, router])
+
   const load = () => fetch(`/api/categories?t=${Date.now()}`).then(r => r.json()).then(d => setCats(d.categories || []))
-  useEffect(() => { load() }, [])
+  useEffect(() => { if (user && can(user.role as Role, 'manageCategories')) load() }, [user])
 
   function openEdit(c: Category) {
     setEditing(c)
@@ -81,6 +93,8 @@ export default function AdminCategories() {
     border: '1.5px solid var(--border)', fontSize: '0.9rem',
     fontFamily: 'var(--font-dm-sans)', boxSizing: 'border-box' as const,
   }
+
+  if (loading || !user || !can(user.role as Role, 'manageCategories')) return null
 
   return (
     <div style={{ padding: '2rem' }}>

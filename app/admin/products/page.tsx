@@ -18,10 +18,10 @@ export default function AdminProducts() {
   const { showToast }           = useCart()
 
   const load = () => {
-    fetch(`/api/products?t=${Date.now()}`).then(r => r.json()).then(d => {
-      setProducts(d.products || [])
-      setLoading(false)
-    })
+    fetch(`/api/products?t=${Date.now()}`)
+      .then(r => { if (!r.ok) throw new Error(r.statusText); return r.json() })
+      .then(d => { setProducts(d.products || []); setLoading(false) })
+      .catch(() => setLoading(false))
   }
 
   useEffect(load, [])

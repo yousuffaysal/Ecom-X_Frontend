@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/AuthContext'
+import { can, type Permission } from '@/lib/permissions'
+import type { Role } from '@/lib/auth'
 
 type Stats = {
   orders: number
@@ -27,7 +29,10 @@ export default function AdminDashboard() {
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
 
   useEffect(() => {
-    fetch('/api/admin/stats').then(r => r.json()).then(setStats)
+    fetch('/api/admin/stats')
+      .then(r => { if (!r.ok) throw new Error(r.statusText); return r.json() })
+      .then(setStats)
+      .catch(() => {})
   }, [])
 
   return (
@@ -170,12 +175,12 @@ export default function AdminDashboard() {
           <div style={{ background: 'white', borderRadius: 16, padding: '1.25rem 1.5rem', border: '1px solid #f0ede8', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
             <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--ink)', marginBottom: '1rem' }}>Quick Actions</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {[
-                { href: '/admin/products/new', label: 'Add New Product',   icon: '+', color: 'var(--red)',   bg: '#fee2e2' },
-                { href: '/admin/orders',       label: 'Manage Orders',     icon: '◎', color: '#1d4ed8', bg: '#eff6ff' },
-                { href: '/admin/users',        label: 'Manage Users',      icon: '⊕', color: '#7c3aed', bg: '#f5f3ff' },
-                { href: '/admin/categories',   label: 'Edit Categories',   icon: '≡', color: '#b45309', bg: '#fffbeb' },
-              ].map(a => (
+              {([
+                { href: '/admin/products/new', label: 'Add New Product',   icon: '+', color: 'var(--red)',   bg: '#fee2e2', permission: 'manageProducts'   as Permission },
+                { href: '/admin/orders',       label: 'Manage Orders',     icon: '◎', color: '#1d4ed8', bg: '#eff6ff', permission: 'viewOrders'        as Permission },
+                { href: '/admin/users',        label: 'Manage Users',      icon: '⊕', color: '#7c3aed', bg: '#f5f3ff', permission: 'manageUsers'       as Permission },
+                { href: '/admin/categories',   label: 'Edit Categories',   icon: '≡', color: '#b45309', bg: '#fffbeb', permission: 'manageCategories'  as Permission },
+              ] as const).filter(a => can(user.role as Role, a.permission)).map(a => (
                 <Link
                   key={a.href}
                   href={a.href}
