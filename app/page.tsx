@@ -415,43 +415,158 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* AI STYLE ADVISOR CALLOUT */}
-      <section style={{ background: '#0f0e0d', padding: '64px 48px', position: 'relative', overflow: 'hidden' }} className="rsp-px">
-        <div style={{ position: 'absolute', top: -80, right: -80, width: 340, height: 340, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.04)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: -60, left: '30%', width: 240, height: 240, borderRadius: '50%', background: 'rgba(185,28,28,0.05)', pointerEvents: 'none' }} />
-        <div style={{ maxWidth: 680, position: 'relative' }}>
+      {/* MEET ARIA — AI MARKETING SECTION */}
+      <section style={{ background: '#0f0e0d', padding: '100px 48px', position: 'relative', overflow: 'hidden' }} className="rsp-px">
+        {/* Background orbs */}
+        <div style={{ position: 'absolute', top: -120, right: -120, width: 500, height: 500, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.03)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: -60, right: -60, width: 300, height: 300, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.04)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: -80, left: '20%', width: 320, height: 320, borderRadius: '50%', background: 'rgba(185,28,28,0.04)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '40%', left: -60, width: 200, height: 200, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.03)', pointerEvents: 'none' }} />
+
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5rem', alignItems: 'center' }} className="rsp-aria-grid">
+
+          {/* LEFT — Copy */}
           <FadeIn delay={0.1}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-              <div style={{ width: 24, height: 24, borderRadius: 6, background: 'rgba(185,28,28,0.15)', border: '1px solid rgba(185,28,28,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="#b91c1c" stroke="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+            <div>
+              {/* Badge */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.35rem 0.875rem', borderRadius: 20, background: 'rgba(185,28,28,0.12)', border: '1px solid rgba(185,28,28,0.28)', marginBottom: '2rem' }}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="#b91c1c" stroke="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                <span style={{ fontSize: '0.62rem', fontWeight: 700, color: 'rgba(185,28,28,0.9)', textTransform: 'uppercase', letterSpacing: '0.16em' }}>New — AI Powered · Free</span>
               </div>
-              <span style={{ fontSize: '0.6rem', fontWeight: 700, color: 'rgba(185,28,28,0.85)', textTransform: 'uppercase', letterSpacing: '0.16em' }}>New — AI Powered</span>
+
+              {/* Headline */}
+              <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: 'clamp(2.5rem, 4vw, 3.75rem)', fontWeight: 900, color: 'white', letterSpacing: '-0.03em', lineHeight: 1.05, marginBottom: '1.25rem' }}>
+                Meet Aria,<br />
+                <span style={{ color: 'rgba(255,255,255,0.35)', fontStyle: 'italic', fontWeight: 700 }}>your personal<br />fashion advisor.</span>
+              </h2>
+
+              <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.75, marginBottom: '2.5rem', maxWidth: 440 }}>
+                Aria knows the entire Redleaf collection inside out. Tell her your occasion, your budget, or just a vibe — she&apos;ll find exactly what you need, instantly.
+              </p>
+
+              {/* Feature list */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem', marginBottom: '2.5rem' }}>
+                {[
+                  {
+                    icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>,
+                    title: 'Occasion Matching',
+                    desc: 'Wedding, office, date night — Aria picks for the moment.',
+                  },
+                  {
+                    icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>,
+                    title: 'Real-Time Catalog',
+                    desc: 'Always up to date with live stock and pricing.',
+                  },
+                  {
+                    icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
+                    title: 'Styled Just for You',
+                    desc: 'Recommendations adapt to your preferences and budget.',
+                  },
+                ].map(f => (
+                  <div key={f.title} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.875rem' }}>
+                    <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(185,28,28,0.12)', border: '1px solid rgba(185,28,28,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#b91c1c', flexShrink: 0, marginTop: 1 }}>
+                      {f.icon}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'white', marginBottom: '0.1rem' }}>{f.title}</div>
+                      <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.38)', lineHeight: 1.5 }}>{f.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
+                <button
+                  onClick={() => router.push('/style-advisor')}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                    padding: '0.9rem 2rem', borderRadius: 12, border: 'none',
+                    background: 'var(--red)', color: 'white',
+                    fontSize: '0.9rem', fontWeight: 700, cursor: 'pointer',
+                    fontFamily: 'var(--font-dm-sans)', letterSpacing: '0.01em',
+                    transition: 'opacity 0.2s, transform 0.2s',
+                    boxShadow: '0 4px 20px rgba(185,28,28,0.4)',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                  onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)' }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                  Talk to Aria — it&apos;s free
+                </button>
+                <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.04em' }}>No account needed</span>
+              </div>
             </div>
-            <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', fontWeight: 700, color: 'white', letterSpacing: '-0.02em', lineHeight: 1.2, marginBottom: '0.875rem' }}>
-              Not sure what to wear?<br />
-              <span style={{ color: 'rgba(255,255,255,0.4)', fontStyle: 'italic' }}>Ask Aria.</span>
-            </h2>
-            <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.65, marginBottom: '2rem', maxWidth: 480 }}>
-              Aria is your personal AI style advisor — tell her your occasion, budget, or vibe and she&apos;ll pick the perfect pieces from the Redleaf collection, just for you.
-            </p>
-            <button
-              onClick={() => router.push('/style-advisor')}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                padding: '0.875rem 1.75rem', borderRadius: 10, border: 'none',
-                background: 'var(--red)', color: 'white',
-                fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer',
-                fontFamily: 'var(--font-dm-sans)', letterSpacing: '0.01em',
-                transition: 'opacity 0.2s',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-              Talk to Aria — it&apos;s free
-            </button>
+          </FadeIn>
+
+          {/* RIGHT — Mock chat card */}
+          <FadeIn delay={0.3}>
+            <div style={{ background: '#181816', borderRadius: 20, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)', boxShadow: '0 32px 80px rgba(0,0,0,0.5)' }}>
+              {/* Card header */}
+              <div style={{ background: '#111110', padding: '1rem 1.25rem', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'rgba(185,28,28,0.15)', border: '1px solid rgba(185,28,28,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" strokeWidth="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'white' }}>Aria</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#22c55e' }} />
+                    <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.35)' }}>AI Style Advisor · Online</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Chat body */}
+              <div style={{ padding: '1.5rem 1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {/* User bubble */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.09)', color: 'rgba(255,255,255,0.85)', padding: '0.7rem 1rem', borderRadius: '16px 4px 16px 16px', fontSize: '0.82rem', lineHeight: 1.55, maxWidth: '80%' }}>
+                    I need an outfit for a winter wedding — elegant but not too formal.
+                  </div>
+                </div>
+
+                {/* Aria bubble */}
+                <div style={{ display: 'flex', gap: '0.625rem', alignItems: 'flex-start' }}>
+                  <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(185,28,28,0.15)', border: '1px solid rgba(185,28,28,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="#b91c1c" stroke="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                  </div>
+                  <div style={{ background: '#222220', color: 'rgba(255,255,255,0.78)', padding: '0.75rem 1rem', borderRadius: '4px 16px 16px 16px', fontSize: '0.82rem', lineHeight: 1.6, maxWidth: '85%', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ fontSize: '0.58rem', fontWeight: 700, color: '#b91c1c', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '0.3rem' }}>Aria · Style Advisor</div>
+                    Perfect for a winter wedding. I&apos;d suggest the Ember Field Jacket layered over slim tailoring — the wool construction keeps it warm without losing elegance. Here are my top picks:
+                  </div>
+                </div>
+
+                {/* Mock product cards */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.625rem', paddingLeft: '2.25rem' }}>
+                  {[
+                    { name: 'Ember Field Jacket', price: '$298', bg: 'oklch(0.88 0.05 27)' },
+                    { name: 'Ridge Knit', price: '$188', bg: 'oklch(0.88 0.03 220)' },
+                  ].map(p => (
+                    <div key={p.name} style={{ background: '#1e1e1c', borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      <div style={{ height: 72, background: p.bg, opacity: 0.7 }} />
+                      <div style={{ padding: '0.5rem 0.625rem' }}>
+                        <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'rgba(255,255,255,0.8)', marginBottom: '0.1rem' }}>{p.name}</div>
+                        <div style={{ fontSize: '0.65rem', color: 'rgba(185,28,28,0.85)', fontWeight: 700 }}>{p.price}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Input preview */}
+              <div style={{ padding: '0.875rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', gap: '0.625rem', alignItems: 'center' }}>
+                <div style={{ flex: 1, background: '#111110', borderRadius: 10, padding: '0.6rem 0.875rem', fontSize: '0.78rem', color: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  Ask Aria anything…
+                </div>
+                <div style={{ width: 34, height: 34, borderRadius: 10, background: 'var(--red)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, opacity: 0.5 }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </div>
+              </div>
+            </div>
           </FadeIn>
         </div>
+
+        <style>{`.rsp-aria-grid { @media (max-width: 768px) { grid-template-columns: 1fr !important; gap: 2.5rem !important; } }`}</style>
       </section>
 
       {/* EDITORIAL LOOKBOOK / MARKETING */}
