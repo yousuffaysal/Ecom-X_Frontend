@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { motion, Variants } from 'framer-motion'
 
 // ── Replace with your hosted video URL ────────────────────────────────────────
 // Upload to Cloudinary (account: dlvlxrvvd) or any CDN, paste the URL below.
@@ -46,7 +46,7 @@ export default function VideoHero() {
     return () => window.removeEventListener('scroll', update)
   }, [])
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1, 
@@ -59,7 +59,7 @@ export default function VideoHero() {
     }
   }
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: { 
       opacity: 1, 

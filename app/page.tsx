@@ -575,7 +575,7 @@ export default function HomePage() {
               { icon: '♡', label: 'Fair Wages Certified', desc: 'All factory workers paid above living wage' },
               { icon: '⟳', label: 'Lifetime Repair Service', desc: "Send it back — we'll fix it, free of charge" },
             ].map((pledge, i) => (
-              <FadeIn key={pledge.label} delay={0.1 + (i * 0.1)}>
+              <FadeIn key={i} delay={0.1 + (i * 0.1)}>
                 <div
                   style={{ padding: '24px', border: '1.5px solid var(--border)', borderRadius: 4, transition: 'border-color 0.2s, box-shadow 0.2s', height: '100%' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--red)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)' }}
