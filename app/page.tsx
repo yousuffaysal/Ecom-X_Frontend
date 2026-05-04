@@ -7,24 +7,154 @@ import Stars from '@/components/Stars'
 import { testimonials } from '@/lib/data'
 import VideoHero from '@/components/VideoHero'
 import Counter from '@/components/Counter'
-import { motion } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 
-function FadeIn({ children, delay = 0, y = 30, className = '', style = {} }: { children: React.ReactNode, delay?: number, y?: number, className?: string, style?: React.CSSProperties }) {
+function FadeIn({ children, delay = 0, y = 30, className = '', style = {}, duration = 1.2 }: { children: React.ReactNode, delay?: number, y?: number, className?: string, style?: React.CSSProperties, duration?: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ 
-        duration: 1.2, 
-        delay, 
-        ease: [0.22, 1, 0.36, 1] 
+      transition={{
+        duration,
+        delay,
+        ease: [0.22, 1, 0.36, 1]
       }}
       className={className}
       style={style}
     >
       {children}
     </motion.div>
+  )
+}
+
+const USER_MSG = "I need an outfit for a winter wedding — elegant but not too formal."
+const ARIA_MSG = "Perfect for a winter wedding. I'd suggest the Ember Field Jacket layered over slim tailoring — the wool construction keeps it warm without losing elegance. Here are my top picks:"
+
+function ChatDemo() {
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-100px' })
+
+  const [userText, setUserText]       = useState('')
+  const [userDone, setUserDone]       = useState(false)
+  const [showThinking, setShowThinking] = useState(false)
+  const [ariaText, setAriaText]       = useState('')
+  const [ariaDone, setAriaDone]       = useState(false)
+  const [showCards, setShowCards]     = useState(false)
+
+  useEffect(() => {
+    if (!inView) return
+
+    let timeout: ReturnType<typeof setTimeout>
+    let interval: ReturnType<typeof setInterval>
+
+    const typeAria = () => {
+      let i = 0
+      interval = setInterval(() => {
+        i++
+        setAriaText(ARIA_MSG.slice(0, i))
+        if (i >= ARIA_MSG.length) {
+          clearInterval(interval)
+          setAriaDone(true)
+          timeout = setTimeout(() => setShowCards(true), 400)
+        }
+      }, 22)
+    }
+
+    const showThink = () => {
+      setShowThinking(true)
+      timeout = setTimeout(() => {
+        setShowThinking(false)
+        timeout = setTimeout(typeAria, 180)
+      }, 1100)
+    }
+
+    const typeUser = () => {
+      let i = 0
+      interval = setInterval(() => {
+        i++
+        setUserText(USER_MSG.slice(0, i))
+        if (i >= USER_MSG.length) {
+          clearInterval(interval)
+          setUserDone(true)
+          timeout = setTimeout(showThink, 450)
+        }
+      }, 36)
+    }
+
+    timeout = setTimeout(typeUser, 600)
+
+    return () => { clearTimeout(timeout); clearInterval(interval) }
+  }, [inView])
+
+  return (
+    <div ref={ref} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      {/* User bubble */}
+      {userText && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ background: 'rgba(255,255,255,0.09)', color: 'rgba(255,255,255,0.85)', padding: '0.9rem 1.25rem', borderRadius: '18px 4px 18px 18px', fontSize: '0.92rem', lineHeight: 1.6, maxWidth: '82%' }}>
+            {userText}{!userDone && <span className="typing-cursor" />}
+          </div>
+        </div>
+      )}
+
+      {/* Thinking dots */}
+      {showThinking && (
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+          <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'rgba(185,28,28,0.15)', border: '1px solid rgba(185,28,28,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="#b91c1c" stroke="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+          </div>
+          <div style={{ background: '#222220', padding: '0.9rem 1.1rem', borderRadius: '4px 18px 18px 18px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+            {[0, 1, 2].map(i => (
+              <motion.span
+                key={i}
+                animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 0.7, repeat: Infinity, delay: i * 0.18, ease: 'easeInOut' }}
+                style={{ display: 'block', width: 6, height: 6, borderRadius: '50%', background: '#b91c1c' }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Aria bubble */}
+      {ariaText && (
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+          <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'rgba(185,28,28,0.15)', border: '1px solid rgba(185,28,28,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="#b91c1c" stroke="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+          </div>
+          <div style={{ background: '#222220', color: 'rgba(255,255,255,0.78)', padding: '0.9rem 1.1rem', borderRadius: '4px 18px 18px 18px', fontSize: '0.92rem', lineHeight: 1.65, maxWidth: '85%', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ fontSize: '0.64rem', fontWeight: 700, color: '#b91c1c', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '0.4rem' }}>Aria · Style Advisor</div>
+            {ariaText}{!ariaDone && <span className="typing-cursor" />}
+          </div>
+        </div>
+      )}
+
+      {/* Product cards */}
+      {showCards && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', paddingLeft: '2.75rem' }}
+        >
+          {[
+            { name: 'Ember Field Jacket', price: '$298', img: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=500&q=80' },
+            { name: 'Ridge Knit', price: '$188', img: 'https://images.unsplash.com/photo-1576871337622-98d48d1cf531?auto=format&fit=crop&w=500&q=80' },
+          ].map(p => (
+            <div key={p.name} style={{ background: '#1e1e1c', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <div style={{ height: 96, overflow: 'hidden' }}>
+                <img src={p.img} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              </div>
+              <div style={{ padding: '0.625rem 0.75rem' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'rgba(255,255,255,0.8)', marginBottom: '0.15rem' }}>{p.name}</div>
+                <div style={{ fontSize: '0.72rem', color: 'rgba(185,28,28,0.85)', fontWeight: 700 }}>{p.price}</div>
+              </div>
+            </div>
+          ))}
+        </motion.div>
+      )}
+    </div>
   )
 }
 
@@ -212,24 +342,24 @@ export default function HomePage() {
       {/* HERO */}
       <section style={S.hero} className="rsp-hero">
         <div style={S.heroLeft} className="rsp-hero-left">
-          <FadeIn delay={0.2}>
+          <FadeIn delay={0.3} duration={2.2}>
             <div style={S.heroEyebrow}>
               <span style={S.heroLine} />
               Spring / Summer 2026 Collection
             </div>
           </FadeIn>
-          <FadeIn delay={0.4}>
+          <FadeIn delay={0.6} duration={2.2}>
             <h1 style={S.heroTitle}>
               Wear What<br />
               <span style={S.heroTitleRed}>Endures.</span>
             </h1>
           </FadeIn>
-          <FadeIn delay={0.6}>
+          <FadeIn delay={0.9} duration={2.2}>
             <p style={S.heroDesc}>
               Redleaf makes clothing for people who are done with disposable fashion. Every piece is designed with precision, sourced with integrity, and built to last a lifetime.
             </p>
           </FadeIn>
-          <FadeIn delay={0.8}>
+          <FadeIn delay={1.2} duration={2.2}>
             <div style={S.heroBtns} className="rsp-btns">
               <button className="btn-primary" onClick={() => router.push('/shop')}>Shop Collection</button>
               <button className="btn-outline" onClick={() => router.push('/about')}>Our Story</button>
@@ -237,13 +367,13 @@ export default function HomePage() {
           </FadeIn>
         </div>
         <div style={S.heroRight} className="rsp-hero-right">
-          <motion.img 
-            initial={{ scale: 1.05, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 2.5, ease: [0.22, 1, 0.36, 1] }}
-            src="https://ik.imagekit.io/2lax2ytm2/heloLeaf.jpeg" 
-            alt="Spring/Summer 2026 Campaign" 
-            style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0, zIndex: 0 }} 
+          <motion.img
+            initial={{ clipPath: 'inset(100% 0% 0% 0%)', scale: 1.08 }}
+            animate={{ clipPath: 'inset(0% 0% 0% 0%)', scale: 1 }}
+            transition={{ duration: 2.4, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+            src="https://ik.imagekit.io/2lax2ytm2/heloLeaf.jpeg"
+            alt="Spring/Summer 2026 Campaign"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0, zIndex: 0 }}
           />
           <FadeIn delay={0.3} y={0} style={{ ...S.heroBadge, zIndex: 1 }}>
             <div style={S.heroBadgeNum}>
@@ -417,143 +547,183 @@ export default function HomePage() {
 
       {/* MEET ARIA — AI MARKETING SECTION */}
       <section style={{ background: '#0f0e0d', padding: '100px 48px', position: 'relative', overflow: 'hidden' }} className="rsp-px">
-        {/* Background orbs */}
-        <div style={{ position: 'absolute', top: -120, right: -120, width: 500, height: 500, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.03)', pointerEvents: 'none' }} />
+
+        {/* Animated background glows */}
+        <motion.div
+          animate={{ scale: [1, 1.18, 1], opacity: [0.06, 0.14, 0.06] }}
+          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ position: 'absolute', top: -180, right: -180, width: 680, height: 680, borderRadius: '50%', background: 'radial-gradient(circle, rgba(185,28,28,0.35) 0%, transparent 68%)', pointerEvents: 'none' }}
+        />
+        <motion.div
+          animate={{ scale: [1, 1.12, 1], opacity: [0.04, 0.09, 0.04] }}
+          transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
+          style={{ position: 'absolute', bottom: -100, left: '15%', width: 420, height: 420, borderRadius: '50%', background: 'radial-gradient(circle, rgba(185,28,28,0.25) 0%, transparent 70%)', pointerEvents: 'none' }}
+        />
         <div style={{ position: 'absolute', top: -60, right: -60, width: 300, height: 300, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.04)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: -80, left: '20%', width: 320, height: 320, borderRadius: '50%', background: 'rgba(185,28,28,0.04)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', top: '40%', left: -60, width: 200, height: 200, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.03)', pointerEvents: 'none' }} />
 
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5rem', alignItems: 'center' }} className="rsp-aria-grid">
 
-          {/* LEFT — Copy */}
-          <FadeIn delay={0.1}>
-            <div>
-              {/* Badge */}
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.35rem 0.875rem', borderRadius: 20, background: 'rgba(185,28,28,0.12)', border: '1px solid rgba(185,28,28,0.28)', marginBottom: '2rem' }}>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="#b91c1c" stroke="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-                <span style={{ fontSize: '0.62rem', fontWeight: 700, color: 'rgba(185,28,28,0.9)', textTransform: 'uppercase', letterSpacing: '0.16em' }}>New — AI Powered · Free</span>
-              </div>
+          {/* LEFT — slides in from left */}
+          <motion.div
+            initial={{ opacity: 0, x: -56 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: -14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 1.0, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.35rem 0.875rem', borderRadius: 20, background: 'rgba(185,28,28,0.12)', border: '1px solid rgba(185,28,28,0.28)', marginBottom: '2rem' }}
+            >
+              <motion.svg
+                animate={{ rotate: [0, 18, -18, 0], scale: [1, 1.2, 1] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+                width="10" height="10" viewBox="0 0 24 24" fill="#b91c1c" stroke="none"
+              >
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+              </motion.svg>
+              <span style={{ fontSize: '0.62rem', fontWeight: 700, color: 'rgba(185,28,28,0.9)', textTransform: 'uppercase', letterSpacing: '0.16em' }}>New — AI Powered · Free</span>
+            </motion.div>
 
-              {/* Headline */}
-              <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: 'clamp(2.5rem, 4vw, 3.75rem)', fontWeight: 900, color: 'white', letterSpacing: '-0.03em', lineHeight: 1.05, marginBottom: '1.25rem' }}>
-                Meet Aria,<br />
-                <span style={{ color: 'rgba(255,255,255,0.35)', fontStyle: 'italic', fontWeight: 700 }}>your personal<br />fashion advisor.</span>
-              </h2>
+            {/* Headline */}
+            <motion.h2
+              initial={{ opacity: 0, y: 28 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 1.4, delay: 0.38, ease: [0.22, 1, 0.36, 1] }}
+              style={{ fontFamily: 'var(--font-playfair)', fontSize: 'clamp(2.5rem, 4vw, 3.75rem)', fontWeight: 900, color: 'white', letterSpacing: '-0.03em', lineHeight: 1.05, marginBottom: '1.25rem' }}
+            >
+              Meet Aria,<br />
+              <span style={{ color: 'rgba(255,255,255,0.35)', fontStyle: 'italic', fontWeight: 700 }}>your personal<br />fashion advisor.</span>
+            </motion.h2>
 
-              <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.75, marginBottom: '2.5rem', maxWidth: 440 }}>
-                Aria knows the entire Redleaf collection inside out. Tell her your occasion, your budget, or just a vibe — she&apos;ll find exactly what you need, instantly.
-              </p>
+            <motion.p
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 1.2, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.75, marginBottom: '2.5rem', maxWidth: 440 }}
+            >
+              Aria knows the entire Redleaf collection inside out. Tell her your occasion, your budget, or just a vibe — she&apos;ll find exactly what you need, instantly.
+            </motion.p>
 
-              {/* Feature list */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem', marginBottom: '2.5rem' }}>
-                {[
-                  {
-                    icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>,
-                    title: 'Occasion Matching',
-                    desc: 'Wedding, office, date night — Aria picks for the moment.',
-                  },
-                  {
-                    icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>,
-                    title: 'Real-Time Catalog',
-                    desc: 'Always up to date with live stock and pricing.',
-                  },
-                  {
-                    icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
-                    title: 'Styled Just for You',
-                    desc: 'Recommendations adapt to your preferences and budget.',
-                  },
-                ].map(f => (
-                  <div key={f.title} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.875rem' }}>
-                    <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(185,28,28,0.12)', border: '1px solid rgba(185,28,28,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#b91c1c', flexShrink: 0, marginTop: 1 }}>
-                      {f.icon}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'white', marginBottom: '0.1rem' }}>{f.title}</div>
-                      <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.38)', lineHeight: 1.5 }}>{f.desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* CTA */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
-                <button
-                  onClick={() => router.push('/style-advisor')}
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                    padding: '0.9rem 2rem', borderRadius: 4, border: 'none',
-                    background: 'var(--red)', color: 'white',
-                    fontSize: '0.9rem', fontWeight: 700, cursor: 'pointer',
-                    fontFamily: 'var(--font-dm-sans)', letterSpacing: '0.01em',
-                    transition: 'opacity 0.2s, transform 0.2s',
-                    boxShadow: '0 4px 20px rgba(185,28,28,0.4)',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-                  onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)' }}
+            {/* Feature list — each slides from left */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem', marginBottom: '2.5rem' }}>
+              {[
+                {
+                  icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>,
+                  title: 'Occasion Matching',
+                  desc: 'Wedding, office, date night — Aria picks for the moment.',
+                },
+                {
+                  icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>,
+                  title: 'Real-Time Catalog',
+                  desc: 'Always up to date with live stock and pricing.',
+                },
+                {
+                  icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
+                  title: 'Styled Just for You',
+                  desc: 'Recommendations adapt to your preferences and budget.',
+                },
+              ].map((f, i) => (
+                <motion.div
+                  key={f.title}
+                  initial={{ opacity: 0, x: -28 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  transition={{ duration: 1.0, delay: 0.68 + i * 0.16, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ display: 'flex', alignItems: 'flex-start', gap: '0.875rem' }}
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-                  Talk to Aria — it&apos;s free
-                </button>
-                <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.04em' }}>No account needed</span>
-              </div>
+                  <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(185,28,28,0.12)', border: '1px solid rgba(185,28,28,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#b91c1c', flexShrink: 0, marginTop: 1 }}>
+                    {f.icon}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'white', marginBottom: '0.1rem' }}>{f.title}</div>
+                    <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.38)', lineHeight: 1.5 }}>{f.desc}</div>
+                  </div>
+                </motion.div>
+              ))}
             </div>
-          </FadeIn>
 
-          {/* RIGHT — Mock chat card */}
-          <FadeIn delay={0.3}>
-            <div style={{ background: '#181816', borderRadius: 20, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)', boxShadow: '0 32px 80px rgba(0,0,0,0.5)' }}>
+            {/* CTA */}
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 1.1, delay: 1.1, ease: [0.22, 1, 0.36, 1] }}
+              style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}
+            >
+              <button
+                onClick={() => router.push('/style-advisor')}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                  padding: '0.9rem 2rem', borderRadius: 4, border: 'none',
+                  background: 'var(--red)', color: 'white',
+                  fontSize: '0.9rem', fontWeight: 700, cursor: 'pointer',
+                  fontFamily: 'var(--font-dm-sans)', letterSpacing: '0.01em',
+                  transition: 'opacity 0.2s, transform 0.2s',
+                  boxShadow: '0 4px 20px rgba(185,28,28,0.4)',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)' }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                Talk to Aria — it&apos;s free
+              </button>
+              <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.04em' }}>No account needed</span>
+            </motion.div>
+          </motion.div>
+
+          {/* RIGHT — slides in from right, chat card builds itself */}
+          <motion.div
+            initial={{ opacity: 0, x: 56 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 1.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            style={{ position: 'relative' }}
+          >
+            {/* Glow behind card */}
+            <motion.div
+              animate={{ opacity: [0.3, 0.55, 0.3], scale: [1, 1.06, 1] }}
+              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ position: 'absolute', inset: -32, borderRadius: 32, background: 'radial-gradient(ellipse at center, rgba(185,28,28,0.18) 0%, transparent 70%)', pointerEvents: 'none' }}
+            />
+
+            <div style={{ background: '#181816', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)', boxShadow: '0 32px 80px rgba(0,0,0,0.6)', position: 'relative' }}>
               {/* Card header */}
-              <div style={{ background: '#111110', padding: '1rem 1.25rem', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.7, delay: 0.55 }}
+                style={{ background: '#111110', padding: '1rem 1.25rem', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}
+              >
                 <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'rgba(185,28,28,0.15)', border: '1px solid rgba(185,28,28,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" strokeWidth="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
                 </div>
                 <div>
                   <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'white' }}>Aria</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#22c55e' }} />
+                    <motion.div
+                      animate={{ opacity: [1, 0.3, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                      style={{ width: 5, height: 5, borderRadius: '50%', background: '#22c55e' }}
+                    />
                     <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.35)' }}>AI Style Advisor · Online</span>
                   </div>
                 </div>
+              </motion.div>
+
+              {/* Live chat demo */}
+              <div style={{ padding: '1.75rem 1.5rem' }}>
+                <ChatDemo />
               </div>
 
-              {/* Chat body */}
-              <div style={{ padding: '1.5rem 1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {/* User bubble */}
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <div style={{ background: 'rgba(255,255,255,0.09)', color: 'rgba(255,255,255,0.85)', padding: '0.7rem 1rem', borderRadius: '16px 4px 16px 16px', fontSize: '0.82rem', lineHeight: 1.55, maxWidth: '80%' }}>
-                    I need an outfit for a winter wedding — elegant but not too formal.
-                  </div>
-                </div>
-
-                {/* Aria bubble */}
-                <div style={{ display: 'flex', gap: '0.625rem', alignItems: 'flex-start' }}>
-                  <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(185,28,28,0.15)', border: '1px solid rgba(185,28,28,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="#b91c1c" stroke="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-                  </div>
-                  <div style={{ background: '#222220', color: 'rgba(255,255,255,0.78)', padding: '0.75rem 1rem', borderRadius: '4px 16px 16px 16px', fontSize: '0.82rem', lineHeight: 1.6, maxWidth: '85%', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ fontSize: '0.58rem', fontWeight: 700, color: '#b91c1c', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '0.3rem' }}>Aria · Style Advisor</div>
-                    Perfect for a winter wedding. I&apos;d suggest the Ember Field Jacket layered over slim tailoring — the wool construction keeps it warm without losing elegance. Here are my top picks:
-                  </div>
-                </div>
-
-                {/* Mock product cards */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.625rem', paddingLeft: '2.25rem' }}>
-                  {[
-                    { name: 'Ember Field Jacket', price: '$298', bg: 'oklch(0.88 0.05 27)' },
-                    { name: 'Ridge Knit', price: '$188', bg: 'oklch(0.88 0.03 220)' },
-                  ].map(p => (
-                    <div key={p.name} style={{ background: '#1e1e1c', borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)' }}>
-                      <div style={{ height: 72, background: p.bg, opacity: 0.7 }} />
-                      <div style={{ padding: '0.5rem 0.625rem' }}>
-                        <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'rgba(255,255,255,0.8)', marginBottom: '0.1rem' }}>{p.name}</div>
-                        <div style={{ fontSize: '0.65rem', color: 'rgba(185,28,28,0.85)', fontWeight: 700 }}>{p.price}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Input preview */}
+              {/* Input bar */}
               <div style={{ padding: '0.875rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', gap: '0.625rem', alignItems: 'center' }}>
                 <div style={{ flex: 1, background: '#111110', borderRadius: 10, padding: '0.6rem 0.875rem', fontSize: '0.78rem', color: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.06)' }}>
                   Ask Aria anything…
@@ -563,7 +733,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-          </FadeIn>
+          </motion.div>
         </div>
 
         <style>{`.rsp-aria-grid { @media (max-width: 768px) { grid-template-columns: 1fr !important; gap: 2.5rem !important; } }`}</style>

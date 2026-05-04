@@ -6,12 +6,12 @@ const pool = globalThis.pgPool ?? new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
 
-  // Connection pool tuning for ~100k users on serverless
-  max: 20,                    // max simultaneous connections (Neon supports up to 10k via pooler)
-  min: 2,                     // keep 2 warm connections at idle
-  idleTimeoutMillis: 20_000,  // release idle connections after 20s
-  connectionTimeoutMillis: 5_000, // fail fast if no connection available in 5s
-  allowExitOnIdle: true,      // let the process exit cleanly when idle
+  // Connection pool tuning for Neon serverless (pauses when idle, cold-starts in ~5-15s)
+  max: 20,                        // max simultaneous connections
+  min: 0,                         // don't keep idle connections — Neon charges for them and pauses anyway
+  idleTimeoutMillis: 20_000,      // release idle connections after 20s
+  connectionTimeoutMillis: 15_000, // allow up to 15s for Neon cold starts
+  allowExitOnIdle: true,          // let the process exit cleanly when idle
 })
 
 if (process.env.NODE_ENV !== 'production') globalThis.pgPool = pool
