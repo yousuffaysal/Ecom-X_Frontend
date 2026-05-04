@@ -35,6 +35,41 @@ function FadeIn({ children, delay = 0, y = 24 }: { children: React.ReactNode, de
   )
 }
 
+function WaterFill({ bg, delay = 0 }: { bg: string, delay?: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [triggered, setTriggered] = useState(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setTriggered(true)
+          observer.unobserve(entry.target)
+        }
+      },
+      { rootMargin: '0px 0px -60px 0px', threshold: 0.1 }
+    )
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    // Outer div has no clip-path so IntersectionObserver reliably detects it
+    <div ref={ref} style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: 0, right: 0, bottom: 0, left: 0,
+          background: bg,
+          clipPath: triggered ? 'inset(0% 0 0 0)' : 'inset(100% 0 0 0)',
+          transform: triggered ? 'scale(1)' : 'scale(1.06)',
+          transition: `clip-path 1.8s cubic-bezier(0.22, 1, 0.36, 1) ${delay}s, transform 2s cubic-bezier(0.22, 1, 0.36, 1) ${delay}s`,
+        }}
+      />
+    </div>
+  )
+}
+
 export default function AboutPage() {
   const router = useRouter()
 
@@ -211,7 +246,7 @@ export default function AboutPage() {
           </FadeIn>
         </div>
         <div style={S.heroRight}>
-          <div style={S.heroRightBg} />
+          <WaterFill bg="url(/images/about/about_hero.png) center/cover" delay={0.3} />
           <FadeIn delay={0.3} y={10}>
             <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
               <div style={{ background: 'white', padding: '8px 18px', borderRadius: 2, fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--red)', fontWeight: 700 }}>
@@ -227,8 +262,9 @@ export default function AboutPage() {
       <section style={S.story} className="rsp-2col">
         <div style={S.storyLeft}>
           <FadeIn delay={0.1}>
-            <div style={S.storyImg}>
-              <div style={S.storyImgLabel}>Founders — 2014</div>
+            <div style={{ ...S.storyImg, background: 'none', position: 'relative', overflow: 'hidden' }}>
+              <WaterFill bg="url(/images/about/about_story.png) center/cover" delay={0.15} />
+              <div style={{ ...S.storyImgLabel, position: 'relative', zIndex: 1 }}>Founders — 2014</div>
             </div>
           </FadeIn>
           <FadeIn delay={0.2}>
@@ -330,7 +366,12 @@ export default function AboutPage() {
           {team.map((m, i) => (
             <FadeIn key={i} delay={0.1 + (i * 0.1)}>
               <div style={S.teamCard}>
-                <div style={{ ...S.teamPhoto, background: m.bg }}></div>
+                <div style={{ ...S.teamPhoto, position: 'relative' }}>
+                  <WaterFill
+                    style={{ position: 'absolute', inset: 0, background: m.bg }}
+                    delay={0.1 + i * 0.15}
+                  />
+                </div>
                 <div style={S.teamName}>{m.name}</div>
                 <div style={S.teamRole}>{m.role}</div>
                 <p style={S.teamBio}>{m.bio}</p>
