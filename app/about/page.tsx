@@ -367,10 +367,7 @@ export default function AboutPage() {
             <FadeIn key={i} delay={0.1 + (i * 0.1)}>
               <div style={S.teamCard}>
                 <div style={{ ...S.teamPhoto, position: 'relative' }}>
-                  <WaterFill
-                    style={{ position: 'absolute', inset: 0, background: m.bg }}
-                    delay={0.1 + i * 0.15}
-                  />
+                  <WaterFill bg={m.bg} delay={0.1 + i * 0.15} />
                 </div>
                 <div style={S.teamName}>{m.name}</div>
                 <div style={S.teamRole}>{m.role}</div>
