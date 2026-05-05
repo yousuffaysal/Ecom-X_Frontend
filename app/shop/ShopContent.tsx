@@ -20,7 +20,7 @@ export default function ShopContent() {
   const [filtersOpen, setFiltersOpen] = useState(true)
 
   useEffect(() => {
-    fetch('/api/categories').then(r => r.json()).then(d => setCategories(d.categories || []))
+    fetch('/api/categories', { cache: 'no-store' }).then(r => r.json()).then(d => setCategories(d.categories || []))
   }, [])
 
   const fetchProducts = useCallback(() => {
@@ -31,7 +31,7 @@ export default function ShopContent() {
     params.set('minPrice', String(priceRange[0]))
     params.set('maxPrice', String(priceRange[1]))
 
-    fetch('/api/products?' + params.toString())
+    fetch('/api/products?' + params.toString(), { cache: 'no-store' })
       .then(r => r.json())
       .then(d => {
         setProducts(d.products || [])

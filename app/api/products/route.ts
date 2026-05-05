@@ -5,6 +5,8 @@ import { cache } from '@/lib/cache'
 import { can } from '@/lib/permissions'
 import { broadcastToUsers } from '@/lib/web-push'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
   const cat     = searchParams.get('cat')
@@ -76,8 +78,6 @@ export async function GET(req: NextRequest) {
 
   const result = await query(sql, params)
   const res = NextResponse.json({ products: result.rows })
-  // Cache public product listings for 60s at the CDN edge, serve stale for 5min while revalidating
-  res.headers.set('Cache-Control', 's-maxage=60, stale-while-revalidate=300')
   return res
 }
 

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { query } from '@/lib/db'
 import { getSession } from '@/lib/session'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   const result = await query(
     `SELECT c.*, COUNT(p.id)::int AS product_count
@@ -12,8 +14,6 @@ export async function GET() {
     []
   )
   const res = NextResponse.json({ categories: result.rows })
-  // Categories change infrequently — cache for 5min at CDN edge
-  res.headers.set('Cache-Control', 's-maxage=300, stale-while-revalidate=600')
   return res
 }
 
