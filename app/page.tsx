@@ -173,7 +173,7 @@ export default function HomePage() {
   useEffect(() => {
     fetch('/api/products?featured=true&limit=4').then(r => r.json()).then(d => setFeatured(d.products || []))
     fetch('/api/categories').then(r => r.json()).then(d => setCategories(d.categories || []))
-    fetch('/api/marketing').then(r => r.json()).then(d => {
+    fetch('/api/marketing', { cache: 'no-store' }).then(r => r.json()).then(d => {
       const map: Record<number, MarketingBanner> = {}
       for (const b of d.banners || []) map[b.slot] = b
       setMarketingBanners(map)
