@@ -91,7 +91,16 @@ export default function MarketingPage() {
       const form = new FormData()
       form.append('file', file)
       const res = await fetch('/api/upload', { method: 'POST', body: form })
-      const data = await res.json()
+      
+      let data: any
+      const contentType = res.headers.get('content-type')
+      if (contentType && contentType.includes('application/json')) {
+        data = await res.json()
+      } else {
+        const text = await res.text()
+        if (res.status === 413) throw new Error('File too large (Max 4.5MB on live site)')
+        throw new Error(`Server error: ${res.status} ${res.statusText}`)
+      }
       
       if (!res.ok) throw new Error(data.details || data.error || 'Upload failed')
       
