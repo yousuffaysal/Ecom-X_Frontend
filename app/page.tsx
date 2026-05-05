@@ -750,7 +750,7 @@ export default function HomePage() {
             <button className="btn-ghost" onClick={() => router.push(marketingBanners[1]?.link_url || '/shop')}>Shop the Look →</button>
           </div>
         </FadeIn>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16 }} className="rsp-1col">
+        <div style={{ display: 'grid', gridTemplateColumns: '1.23fr 1fr', gap: 16 }} className="rsp-1col">
           {/* Slot 1 — Large hero */}
           {(() => {
             const b = marketingBanners[1]
@@ -758,7 +758,7 @@ export default function HomePage() {
               <FadeIn delay={0.1}>
                 <div
                   style={{
-                    position: 'relative', borderRadius: 4, overflow: 'hidden', height: 540, cursor: 'pointer',
+                    position: 'relative', borderRadius: 4, overflow: 'hidden', aspectRatio: '1.4 / 1', cursor: 'pointer',
                     ...(b?.image_url
                       ? { backgroundImage: `url(${b.image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }
                       : imgPlaceholder(27, 0.05)),
@@ -805,7 +805,7 @@ export default function HomePage() {
                 <FadeIn key={item.slot} delay={0.2 + (i * 0.1)} style={{ height: '100%' }}>
                   <div
                     style={{
-                      position: 'relative', borderRadius: 4, overflow: 'hidden', height: '100%', cursor: 'pointer',
+                      position: 'relative', borderRadius: 4, overflow: 'hidden', aspectRatio: '16 / 7', cursor: 'pointer',
                       ...(b?.image_url
                         ? { backgroundImage: `url(${b.image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }
                         : imgPlaceholder(item.hue, item.sat)),
