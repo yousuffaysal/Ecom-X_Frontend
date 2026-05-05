@@ -71,10 +71,13 @@ export default function MarketingPage() {
   }
 
   function update(slot: 1 | 2 | 3, field: keyof Omit<Banner, 'slot'>, value: string | boolean) {
-    setBanners(prev => ({
-      ...prev,
-      [slot]: { ...getBanner(slot), [field]: value },
-    }))
+    setBanners(prev => {
+      const current = prev[slot] ?? { slot, ...EMPTY }
+      return {
+        ...prev,
+        [slot]: { ...current, [field]: value },
+      }
+    })
   }
 
   function showToast(msg: string, ok = true) {
@@ -129,7 +132,10 @@ export default function MarketingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image_url: '' }),
       })
-      setBanners(prev => ({ ...prev, [slot]: { ...b, image_url: '' } }))
+      setBanners(prev => {
+        const current = prev[slot] ?? { slot, ...EMPTY }
+        return { ...prev, [slot]: { ...current, image_url: '' } }
+      })
       showToast('Image removed')
     } catch {
       showToast('Failed', false)
@@ -360,17 +366,17 @@ export default function MarketingPage() {
 
                   <button
                     onClick={() => saveBanner(info.slot)}
-                    disabled={saving[info.slot]}
+                    disabled={saving[info.slot] || uploading[info.slot]}
                     style={{
                       marginTop: 'auto', padding: '0.7rem 1.25rem', borderRadius: 8, border: 'none',
-                      background: saving[info.slot] ? '#9ca3af' : '#b91c1c', color: 'white',
-                      fontSize: '0.85rem', fontWeight: 700, cursor: saving[info.slot] ? 'not-allowed' : 'pointer',
+                      background: (saving[info.slot] || uploading[info.slot]) ? '#9ca3af' : '#b91c1c', color: 'white',
+                      fontSize: '0.85rem', fontWeight: 700, cursor: (saving[info.slot] || uploading[info.slot]) ? 'not-allowed' : 'pointer',
                       fontFamily: 'var(--font-dm-sans)', transition: 'opacity 0.15s',
                     }}
-                    onMouseEnter={e => { if (!saving[info.slot]) (e.currentTarget.style.opacity = '0.85') }}
+                    onMouseEnter={e => { if (!saving[info.slot] && !uploading[info.slot]) (e.currentTarget.style.opacity = '0.85') }}
                     onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                   >
-                    {saving[info.slot] ? 'Saving…' : 'Save Slot ' + info.slot}
+                    {saving[info.slot] ? 'Saving…' : uploading[info.slot] ? 'Uploading…' : 'Save Slot ' + info.slot}
                   </button>
                 </div>
               </div>
