@@ -750,7 +750,7 @@ export default function HomePage() {
             <button className="btn-ghost" onClick={() => router.push(marketingBanners[1]?.link_url || '/shop')}>Shop the Look →</button>
           </div>
         </FadeIn>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.23fr 1fr', gap: 16 }} className="rsp-1col">
+        <div style={{ display: 'grid', gridTemplateColumns: '1.225fr 1fr', gap: 16, alignItems: 'stretch' }} className="rsp-1col">
           {/* Slot 1 — Large hero */}
           {(() => {
             const b = marketingBanners[1]
@@ -795,17 +795,20 @@ export default function HomePage() {
           })()}
 
           {/* Right column — Slots 2 & 3 */}
-          <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 16 }}>
+          {/* Right Column Slots (2 & 3) — Stacked */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, height: '100%' }}>
             {([
               { slot: 2, defaultLabel: 'The Ridge Knit', defaultSub: '$188 — Heritage texture', hue: 220, sat: 0.03 },
               { slot: 3, defaultLabel: 'Mesa Overshirt', defaultSub: '$148 — The shirt that does everything', hue: 150, sat: 0.02 },
             ] as const).map((item, i) => {
               const b = marketingBanners[item.slot]
               return (
-                <FadeIn key={item.slot} delay={0.2 + (i * 0.1)} style={{ height: '100%' }}>
+                <FadeIn key={item.slot} delay={0.2 + (i * 0.1)} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                   <div
+                    className="lookbook-right-slot"
                     style={{
-                      position: 'relative', borderRadius: 4, overflow: 'hidden', aspectRatio: '16 / 7', cursor: 'pointer',
+                      position: 'relative', borderRadius: 4, overflow: 'hidden', cursor: 'pointer',
+                      flex: 1, height: '100%', minHeight: 0,
                       ...(b?.image_url
                         ? { backgroundImage: `url(${b.image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }
                         : imgPlaceholder(item.hue, item.sat)),

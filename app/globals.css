@@ -543,3 +543,12 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   body { background: white !important; }
 }
+/* ─── LOOKBOOK HEIGHT SYNC ─── */
+.lookbook-right-slot {
+  aspect-ratio: 16 / 7;
+}
+@media (min-width: 768px) {
+  .lookbook-right-slot {
+    aspect-ratio: auto !important;
+  }
+}
