@@ -12,16 +12,27 @@ export async function POST(req: NextRequest) {
   const file = form.get('file') as File | null
   if (!file) return NextResponse.json({ error: 'No file' }, { status: 400 })
 
-  const buffer = Buffer.from(await file.arrayBuffer())
+  try {
+    const buffer = Buffer.from(await file.arrayBuffer())
 
-  const result = await new Promise<{ secure_url: string; public_id: string }>((resolve, reject) => {
-    cloudinary.uploader
-      .upload_stream({ folder: 'redleaf', resource_type: 'image' }, (err, res) => {
-        if (err || !res) return reject(err)
-        resolve(res)
-      })
-      .end(buffer)
-  })
+    const result = await new Promise<{ secure_url: string; public_id: string }>((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream({ folder: 'redleaf', resource_type: 'image' }, (err, res) => {
+          if (err || !res) {
+            console.error('Cloudinary upload error:', err)
+            return reject(err)
+          }
+          resolve(res)
+        })
+        .end(buffer)
+    })
 
-  return NextResponse.json({ url: result.secure_url, public_id: result.public_id })
+    return NextResponse.json({ url: result.secure_url, public_id: result.public_id })
+  } catch (error: any) {
+    console.error('Upload handler error:', error)
+    return NextResponse.json(
+      { error: 'Upload failed', details: error.message || String(error) },
+      { status: 500 }
+    )
+  }
 }

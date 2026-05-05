@@ -91,12 +91,14 @@ export default function MarketingPage() {
       const form = new FormData()
       form.append('file', file)
       const res = await fetch('/api/upload', { method: 'POST', body: form })
-      if (!res.ok) throw new Error('Upload failed')
-      const { url } = await res.json()
-      update(slot, 'image_url', url)
+      const data = await res.json()
+      
+      if (!res.ok) throw new Error(data.details || data.error || 'Upload failed')
+      
+      update(slot, 'image_url', data.url)
       showToast('Image uploaded')
-    } catch {
-      showToast('Upload failed', false)
+    } catch (err: any) {
+      showToast(err.message || 'Upload failed', false)
     } finally {
       setUploading(p => ({ ...p, [slot]: false }))
     }
